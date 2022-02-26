@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +16,21 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::group(
+    [
+        'prefix' => 'admin'
+    ],
+    function () {
+        Route::post('/create', [AuthController::class, 'store'])->name('admin.admin.create');
+        Route::post('/login', [AuthController::class, 'login'])->name('admin.admin.login');
+
+        Route::group(['middleware' => 'basic.auth'], function() {
+            Route::get('/user-listing', [AdminUserController::class, 'index'])->name('admin.list.user');
+            Route::delete('/user-listing/{uuid}', [AdminUserController::class, 'deleteUser'])->name('admin.delete.user');
+        });
+    }
+);
+
+//Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//    return $request->user();
+//});

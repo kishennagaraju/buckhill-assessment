@@ -30,4 +30,11 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'jwt' => [
+        'expiry' => env('JWT_EXPIRY', '900'),
+        'private_key_passphrase' => env('JWT_PASSPHRASE', '12345678'),
+        'private_key_file' => storage_path('app/keys/buckhill'),
+        'public_key_file' => storage_path('app/keys/buckhill.pub'),
+    ]
+
 ];
