@@ -11,11 +11,11 @@ class JwtService {
     /**
      * Generate a JWT Token for the provided payload.
      *
-     * @param $data
+     * @param array $data
      *
      * @return array
      */
-    public function generateJwtToken($data = null): array
+    public function generateJwtToken(array $data): array
     {
         $jwtExpiresAt = Config::get('services.jwt.expiry');
         $payload = array_merge($data, [
