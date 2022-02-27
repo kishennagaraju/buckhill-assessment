@@ -18,10 +18,10 @@
         /**
          * @param  \Illuminate\Foundation\Http\FormRequest  $request
          *
-         * @return array
+         * @return array|bool
          * @throws \Throwable
          */
-        public function login(FormRequest $request): array
+        public function login(FormRequest $request)
         {
             $userDetails = $this->getUserModel()->getAdminUserDetailsByEmail($request->get('email'))->firstOrFail();
             if ($this->getHashService()->verifyHashForString($request->get('password'), $userDetails->password)) {
@@ -30,7 +30,7 @@
                 return $this->getJwtService()->generateJwtToken($userDetails->toArray());
             }
 
-            throw new ExpiredException('Expired Token');
+            return false;
         }
 
         /**
@@ -40,7 +40,7 @@
          *
          * @return \Spatie\Fractal\Fractal
          */
-        public function createUser(FormRequest $request): \Spatie\Fractal\Fractal
+        public function createUser(FormRequest $request)
         {
             return fractal($this->getUserModel()->createUser($request->all()), new UserTransformer());
         }

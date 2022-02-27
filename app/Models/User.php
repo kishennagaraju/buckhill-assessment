@@ -59,13 +59,14 @@ class User extends Authenticatable
      *
      * @param  string  $email
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return \App\Models\User|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model
      */
-    public function getAdminUserDetailsByEmail(string $email): \Illuminate\Database\Eloquent\Builder
+    public function getAdminUserDetailsByEmail(string $email)
     {
         return $this->newQuery()
             ->where('email', '=', $email)
-            ->where('is_admin', '=', 1);
+            ->where('is_admin', '=', 1)
+            ->firstOrFail();
     }
 
     /**

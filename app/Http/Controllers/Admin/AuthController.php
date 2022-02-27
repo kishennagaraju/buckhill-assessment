@@ -16,22 +16,26 @@ class AuthController extends Controller
      *
      * @param LoginRequest $request
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      * @throws \Throwable
      */
-    public function login(LoginRequest $request): \Illuminate\Http\Response
+    public function login(LoginRequest $request): \Illuminate\Http\JsonResponse
     {
         $response = [
             'status' => false,
-            'data' => null
+            'data' => 'Login Failed'
         ];
 
         if ($tokenDetails = $this->getAuthService()->login($request)) {
-            $response['status'] = true;
-            $response['data'] = $tokenDetails;
+            $response = [
+                'status' => true,
+                'data' => $tokenDetails
+            ];
+
+            return response()->json($response)->setStatusCode(200);
         }
 
-        return response($response);
+        return response()->json($response)->setStatusCode(401);
     }
 
     /**
@@ -48,10 +52,10 @@ class AuthController extends Controller
      * Create a new Admin User.
      *
      * @param  \App\Http\Requests\Admin\CreateRequest  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function store(CreateRequest $request): \Illuminate\Http\Response
+    public function store(CreateRequest $request): \Illuminate\Http\JsonResponse
     {
-        return response($this->getAuthService()->createUser($request));
+        return response()->json($this->getAuthService()->createUser($request));
     }
 }

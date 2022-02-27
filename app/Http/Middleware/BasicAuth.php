@@ -22,14 +22,16 @@ class BasicAuth
      */
     public function handle(Request $request, Closure $next)
     {
-        if (!$request->hasHeader('Authorization')) {
+        if (!$request->hasHeader('Authorization') && !$request->has('token')) {
             return response()->json(['status' => false, 'message' => 'Unauthorized'])->setStatusCode(401);
         }
 
-        $jwtToken = $request->header('Authorization');
+        $jwtToken = $request->hasHeader('Authorization')
+            ? $request->header('Authorization')
+            : $request->get('token');
 
         try {
-            $details = $this->getJwtService()->decodeJwtToken($request->header('Authorization'));
+            $details = $this->getJwtService()->decodeJwtToken($jwtToken);
             if (!$details->is_admin) {
                 response()->json(['status' => false, 'message' => 'You should be logged in as admin'])->setStatusCode(422);
             }
