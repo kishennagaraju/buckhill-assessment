@@ -11,11 +11,11 @@ class AdminBaseTesting extends BuckhillBaseTesting
 
     public function getAdminUser()
     {
-        return $this->getUserModel()->newQuery()->where('is_admin', '=', 1)->first();
+        return $this->getUserModel()->newQuery()->where('is_admin', '=', 1)->firstOrFail();
     }
 
     public function getUser()
     {
-        return $this->getUserModel()->newQuery()->where('is_admin', '=', 0)->first();
+        return $this->getUserModel()->newQuery()->where('is_admin', '=', 0)->firstOrFail();
     }
 }

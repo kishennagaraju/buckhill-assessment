@@ -18,10 +18,19 @@ class JwtService {
     public function generateJwtToken(array $data): array
     {
         $jwtExpiresAt = Config::get('services.jwt.expiry');
-        $payload = array_merge($data, [
-            'iat' => time(),
-            'exp' => time() + $jwtExpiresAt
-        ]);
+        $payload = $data;
+
+        if (!isset($data['iat'])) {
+            $payload = array_merge($data, [
+                'iat' => time()
+            ]);
+        }
+
+        if (!isset($data['exp'])) {
+            $payload = array_merge($data, [
+                'exp' => time() + $jwtExpiresAt
+            ]);
+        }
 
         return [
             'token' => JWT::encode($payload, $this->getPrivateKey(), 'RS256'),

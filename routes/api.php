@@ -24,7 +24,7 @@ Route::group(
         Route::post('/create', [AuthController::class, 'store'])->name('admin.admin.create');
         Route::post('/login', [AuthController::class, 'login'])->name('admin.admin.login');
 
-        Route::group(['middleware' => 'basic.auth'], function() {
+        Route::group(['middleware' => 'basic.auth.admin'], function() {
             Route::get('/user-listing', [AdminUserController::class, 'index'])->name('admin.list.user');
             Route::delete('/user-delete/{uuid}', [AdminUserController::class, 'deleteUser'])->name('admin.delete.user');
         });

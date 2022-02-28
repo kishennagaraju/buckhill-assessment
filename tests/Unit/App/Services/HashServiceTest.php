@@ -26,4 +26,13 @@ class HashServiceTest extends TestCase
 
         $this->assertFalse($this->getHashService()->verifyHashForString("Hello2", $hash));
     }
+
+    public function test_create_and_verify_hash_with_empty_string()
+    {
+        $string = "";
+
+        $hash = $this->getHashService()->generateHash($string);
+
+        $this->assertFalse($hash);
+    }
 }
