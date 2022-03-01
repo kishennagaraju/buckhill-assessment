@@ -20,5 +20,10 @@ class UserObserver
     {
         $user->uuid = Str::uuid();
         $user->password = $this->getHashService()->generateHash($user->password);
+        $user->updated_at = now();
+
+        if (!count($user->getDirty())) {
+            $user->created_at = now();
+        }
     }
 }

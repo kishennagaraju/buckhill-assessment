@@ -31,7 +31,7 @@ return [
     ],
 
     'jwt' => [
-        'expiry' => env('JWT_EXPIRY', '900'),
+        'expiry' => env('JWT_EXPIRY', '900000'),
         'private_key_passphrase' => env('JWT_PASSPHRASE', '12345678'),
         'private_key_file' => storage_path('app/keys/buckhill'),
         'public_key_file' => storage_path('app/keys/buckhill.pub'),

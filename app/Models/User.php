@@ -49,10 +49,21 @@ class User extends Authenticatable
      * @var array
      */
     protected $casts = [
+        'uuid' => 'string',
         'email_verified_at' => 'datetime',
+        'last_login_at' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'avatar' => 'string',
         'is_admin' => 'boolean',
         'is_marketing' => 'boolean',
     ];
+
+    public function jwt_tokens()
+    {
+        return $this->hasMany(JwtTokens::class, 'user_id');
+    }
+
 
     /**
      * Get User details by email address.
@@ -138,5 +149,16 @@ class User extends Authenticatable
             ])
             ->thenReturn()
             ->paginate(\request()->has('limit') ? \request()->get('limit') : env('PAGINATION_LIMIT', 10));
+    }
+
+    public function storeJwtTokenDetailsForUser($userId, $tokenDetails)
+    {
+        $user = $this->newQuery()->with('jwt_tokens')->where('uuid', '=', $userId)->firstOrFail();
+
+        if (!$user->jwt_tokens->toArray()) {
+            $user->jwt_tokens()->save($tokenDetails);
+        } else {
+            $user->jwt_tokens()->update($tokenDetails);
+        }
     }
 }

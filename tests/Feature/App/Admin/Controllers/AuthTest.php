@@ -21,8 +21,8 @@ class AuthTest extends AdminBaseTesting
      */
     public function test_admin_login_success()
     {
-        $userDetails = DB::table('users')->where('is_admin', '=', 1)->first();
-        DB::table('users')->where('id', '=', $userDetails->id)->update([
+        $userDetails = $this->getUserModel()->newQuery()->where('is_admin', '=', 1)->first();
+        $this->getUserModel()->newQuery()->where('id', '=', $userDetails->id)->update([
             'password' => Hash::make('admin')
         ]);
 
@@ -31,7 +31,10 @@ class AuthTest extends AdminBaseTesting
             'password' => 'admin'
         ]);
 
+        $response = $this->decodeResponseJson();
+
         $this->assertResponseStatus(200);
+        $this->assertDatabaseHas('jwt_tokens', ['unique_id' => $response['data']['token']]);
     }
 
     /**

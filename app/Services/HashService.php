@@ -9,11 +9,11 @@ class HashService {
     /**
      * Generate a Hash for the given string.
      *
-     * @param $string
+     * @param  string|null  $string
      *
      * @return false|string
      */
-    public function generateHash($string = null)
+    public function generateHash(string $string = null)
     {
         if ($string) {
             return HashFacade::make($string);
@@ -25,12 +25,12 @@ class HashService {
     /**
      * Check whether the string matches the hashed value.
      *
-     * @param $string
-     * @param $hash
+     * @param  string  $string
+     * @param  string  $hash
      *
      * @return bool
      */
-    public function verifyHashForString($string, $hash)
+    public function verifyHashForString(string $string, string $hash): bool
     {
         return HashFacade::check($string, $hash);
     }

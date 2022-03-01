@@ -45,6 +45,7 @@ class BasicAuthAdminTest extends AdminBaseTesting
         $userDetails = $this->getUserModel()->createUser([
             'first_name' => 'Test',
             'last_name' => 'User',
+            'is_admin' => 0,
             'uuid' => Str::uuid(),
             'email' => 'usertest@buckhill.co.uk',
             'password' => Hash::make('testuser'),
@@ -80,6 +81,7 @@ class BasicAuthAdminTest extends AdminBaseTesting
         $userDetails = $this->getUserModel()->createUser([
             'first_name' => 'Test',
             'last_name' => 'User',
+            'is_admin' => 1,
             'uuid' => Str::uuid(),
             'email' => 'usertest@buckhill.co.uk',
             'password' => Hash::make('testuser'),
@@ -87,25 +89,18 @@ class BasicAuthAdminTest extends AdminBaseTesting
             'address' => '5303 Lubowitz Creek Suite 678 Reingerhaven, ND 62609',
             'phone_number' => '+1.253.273.7280'
         ]);
+
         $jwtTokenDetails = $this->getJwtTokenForUser(array_merge($userDetails->toArray(), [
             'iat' => time(),
-            'exp' => time() - 500
+            'exp' => time() - 5000
         ]));
 
-        $request = FormRequest::create('/api/v1/admin/user-listing', 'GET');
-        $request->merge([
-            'token' => $jwtTokenDetails['token']
-        ]);
-
-        $middleware = new BasicAuthAdmin();
-        $response = $middleware->handle($request, function() {
-            return "SUCCESS";
-        });
-        $responseContent = json_decode($response->content(), true);
+        $this->get('/api/v1/admin/user-listing', ['Authorization' => $jwtTokenDetails['token']]);
+        $responseContent = $this->decodeResponseJson();
 
         $this->assertFalse($responseContent['status']);
         $this->assertEquals("Invalid Token", $responseContent['message']);
-        $this->assertEquals(422, $response->getStatusCode());
+        $this->assertResponseStatus(422);
     }
 
     /**
@@ -138,6 +133,7 @@ class BasicAuthAdminTest extends AdminBaseTesting
         $userDetails = $this->getUserModel()->createUser([
             'first_name' => 'Test',
             'last_name' => 'User',
+            'is_admin' => 0,
             'uuid' => Str::uuid(),
             'email' => 'usertest@buckhill.co.uk',
             'password' => Hash::make('testuser'),

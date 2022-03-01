@@ -12,44 +12,51 @@ class JwtServiceTest extends TestCase
 
     public function test_jwt_generate_success()
     {
+        $uuid = json_decode(json_encode(Str::uuid()), true);
         $data = [
-            'email' => 'test@buckhill.com',
-            'password' => 'password',
-            'first_name' => 'Test',
-            'last_name' => 'User',
-            'password_confirmation' => 'password',
-            'avatar' => Str::uuid(),
-            'address' => '5303 Lubowitz Creek Suite 678 Reingerhaven, ND 62609',
-            'phone_number' => '+1.253.273.7280'
+            'uuid' => $uuid,
         ];
+        $jwtToken = $this->getJwtService()->generateJwtToken($data, false);
 
-        $jwtToken = $this->getJwtService()->generateJwtToken($data);
+        $status = $this->getJwtService()->verifyJwtToken($jwtToken['token']);
+        $decodedTokenDetails = json_decode(
+            json_encode(
+                $this->getJwtService()->decodeJwtToken(
+                    $jwtToken['token'],
+                    false
+                )
+            ),
+            true
+        );
 
-        $decodedTokenDetails = $this->getJwtService()->decodeJwtToken($jwtToken['token']);
-
-        $this->assertEquals($decodedTokenDetails->email, $data['email']);
+        $this->assertTrue($status);
+        $this->assertEquals($uuid, $decodedTokenDetails['uuid']);
     }
 
     public function test_jwt_generate_failure()
     {
+        $uuid = json_decode(json_encode(Str::uuid()), true);
         $data = [
-            'email' => 'test@buckhill.com',
-            'password' => 'password',
-            'first_name' => 'Test',
-            'last_name' => 'User',
-            'password_confirmation' => 'password',
-            'avatar' => Str::uuid(),
-            'address' => '5303 Lubowitz Creek Suite 678 Reingerhaven, ND 62609',
-            'phone_number' => '+1.253.273.7280'
+            'uuid' => json_decode(json_encode(Str::uuid()), true),
         ];
 
         $dataUpt = $data;
         $dataUpt['email'] = 'test2@buckhill.com';
 
-        $jwtToken = $this->getJwtService()->generateJwtToken($dataUpt);
+        $jwtToken = $this->getJwtService()->generateJwtToken($dataUpt, false);
 
-        $decodedTokenDetails = $this->getJwtService()->decodeJwtToken($jwtToken['token']);
+        $status = $this->getJwtService()->verifyJwtToken($jwtToken['token']);
+        $decodedTokenDetails = json_decode(
+            json_encode(
+                $this->getJwtService()->decodeJwtToken(
+                    $jwtToken['token'],
+                    false
+                )
+            ),
+            true
+        );
 
-        $this->assertNotEquals($decodedTokenDetails->email, $data['email']);
+        $this->assertTrue($status);
+        $this->assertNotEquals($uuid, $decodedTokenDetails['uuid']);
     }
 }

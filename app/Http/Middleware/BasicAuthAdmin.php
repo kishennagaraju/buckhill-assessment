@@ -2,7 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use App\Traits\Models\User;
 use App\Traits\Services\Jwt;
 use Closure;
 use Firebase\JWT\BeforeValidException;
@@ -12,7 +11,6 @@ use Illuminate\Http\Request;
 class BasicAuthAdmin
 {
     use Jwt;
-    use User;
 
     /**
      * Handle an incoming request.
@@ -33,9 +31,14 @@ class BasicAuthAdmin
             : $request->get('token');
 
         try {
-            $details = $this->getJwtService()->decodeJwtToken($jwtToken);
-            $userDetails = $this->getUserModel()->where('email', '=', $details->email)->firstOrFail()->toArray();
-            if (!$userDetails['is_admin']) {
+            if (!$this->getJwtService()->verifyJwtToken($jwtToken)) {
+                return response()->json(['status' => false, 'message' => 'Invalid Token'])->setStatusCode(422);
+            }
+
+            $tokenDetails = $this->getJwtService()->getJwtTokenDetails($jwtToken, ['user']);
+            $this->getJwtService()->updateJwtTokenUsage($jwtToken);
+
+            if (!$tokenDetails->user->is_admin) {
                 return response()->json(['status' => false, 'message' => 'You should be logged in as admin'])->setStatusCode(422);
             }
         } catch (ExpiredException|BeforeValidException $ex) {
