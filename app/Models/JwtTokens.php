@@ -78,4 +78,14 @@ class JwtTokens extends Model
 
         return true;
     }
+
+    /**
+     * @param  string  $token
+     *
+     * @return mixed
+     */
+    public function deleteToken(string $token)
+    {
+        return $this->newQuery()->where('unique_id', '=', $token)->delete();
+    }
 }

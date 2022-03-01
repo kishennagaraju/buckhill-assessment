@@ -156,7 +156,7 @@ class User extends Authenticatable
         $user = $this->newQuery()->with('jwt_tokens')->where('uuid', '=', $userId)->firstOrFail();
 
         if (!$user->jwt_tokens->toArray()) {
-            $user->jwt_tokens()->save($tokenDetails);
+            $user->jwt_tokens()->save(new JwtTokens($tokenDetails));
         } else {
             $user->jwt_tokens()->update($tokenDetails);
         }

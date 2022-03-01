@@ -3,6 +3,7 @@
 namespace Tests\Feature\App\Admin\Middleware;
 
 use App\Http\Middleware\BasicAuthAdmin;
+use App\Traits\Services\Jwt;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
@@ -12,6 +13,7 @@ use Tests\Feature\App\AdminBaseTesting;
 class BasicAuthAdminTest extends AdminBaseTesting
 {
     use RefreshDatabase;
+    use Jwt;
 
     /**
      * Testing the BasicAuthAdmin Middleware used for checking JWT Tokens.
@@ -149,5 +151,33 @@ class BasicAuthAdminTest extends AdminBaseTesting
         $this->assertFalse($responseContent['status']);
         $this->assertEquals("You should be logged in as admin", $responseContent['message']);
         $this->assertResponseStatus(422);
+    }
+
+    /**
+     * Testing the BasicAuthAdmin Middleware used for checking JWT Tokens.
+     *
+     * @return void
+     */
+    public function test_basic_auth_middleware_failure_user_not_found()
+    {
+        $adminUserDetails = $this->getAdminUser();
+        $this->getUserModel()->newQuery()->where('is_admin', '=', 1)->update([
+            'password' => Hash::make('admin')
+        ]);
+        $this->post('/api/v1/admin/login', [
+            'email' => $adminUserDetails->email,
+            'password' => 'admin'
+        ]);
+
+        $responseContent = $this->decodeResponseJson();
+        $this->getJwtService()->deleteJwtToken($responseContent['data']['token']);
+
+        $this->get('/api/v1/admin/user-listing', ['Authorization' => $responseContent['data']['token']]);
+        $responseContent = $this->decodeResponseJson();
+
+
+        $this->assertFalse($responseContent['status']);
+        $this->assertEquals("User Not Found", $responseContent['message']);
+        $this->assertResponseStatus(404);
     }
 }

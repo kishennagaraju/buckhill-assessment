@@ -43,6 +43,8 @@ class BasicAuthAdmin
             }
         } catch (ExpiredException|BeforeValidException $ex) {
             return response()->json(['status' => false, 'message' => 'Invalid Token'])->setStatusCode(422);
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'message' => 'User Not Found'])->setStatusCode(404);
         }
 
         return $next($request);

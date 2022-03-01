@@ -50,11 +50,11 @@ class JwtService {
         $jwtToken = JWT::encode($payload, $this->getPrivateKey(), 'RS256');
 
         if ($storeToken) {
-            $this->getUserModel()->storeJwtTokenDetailsForUser($data['uuid'], new \App\Models\JwtTokens([
+            $this->getUserModel()->storeJwtTokenDetailsForUser($data['uuid'], [
                 'unique_id' => $jwtToken,
                 'expires_at' => date('Y-m-d h:i:s', $expiresAt),
                 'token_title' => $data['is_admin'] ? 'Admin Token' : 'User Token'
-            ]));
+            ]);
         }
 
         return [
@@ -148,8 +148,18 @@ class JwtService {
      *
      * @return bool
      */
-    public function updateJwtTokenUsage(string $token)
+    public function updateJwtTokenUsage(string $token): bool
     {
         return $this->getJwtTokensModel()->updateJwtToken($token, ['last_used_at' => now()]);
+    }
+
+    /**
+     * @param  string  $token
+     *
+     * @return bool
+     */
+    public function deleteJwtToken(string $token): bool
+    {
+        return $this->getJwtTokensModel()->deleteToken($token);
     }
 }

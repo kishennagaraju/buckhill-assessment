@@ -2,7 +2,13 @@
 
 namespace Tests\Feature\App\Admin\Controllers;
 
+use App\Http\Controllers\Admin\AuthController;
+use App\Models\JwtTokens;
+use App\Services\Admin\AuthService;
+use App\Services\JwtService;
 use App\Traits\Models\User;
+use App\Traits\Services\Auth;
+use App\Traits\Services\Auth as AuthServiceTrait;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -54,6 +60,28 @@ class AuthTest extends AdminBaseTesting
         $this->assertResponseStatus(401);
     }
 
+
+    public function test_admin_logout_success()
+    {
+        $adminUserDetails = $this->getAdminUser();
+        $this->getUserModel()->newQuery()->where('is_admin', '=', 1)->update([
+            'password' => Hash::make('admin')
+        ]);
+        $this->post('/api/v1/admin/login', [
+            'email' => $adminUserDetails->email,
+            'password' => 'admin'
+        ]);
+
+        $responseContent = $this->decodeResponseJson();
+        // $this->getJwtService()->deleteJwtToken($responseContent['data']['token']);
+
+        $this->get('/api/v1/admin/logout', ['Authorization' => $responseContent['data']['token']]);
+        $responseContent = $this->decodeResponseJson();
+
+        $this->assertTrue($responseContent['status']);
+        $this->assertEquals("Logout Success", $responseContent['data']);
+        $this->assertResponseStatus(200);
+    }
 
     /**
      * Admin Login Success Test.

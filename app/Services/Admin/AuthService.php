@@ -6,7 +6,6 @@
     use App\Traits\Models\User;
     use App\Traits\Services\Hash;
     use App\Traits\Services\Jwt;
-    use Firebase\JWT\ExpiredException;
     use Illuminate\Foundation\Http\FormRequest;
 
     class AuthService {
@@ -46,5 +45,10 @@
         public function createUser(FormRequest $request)
         {
             return fractal($this->getUserModel()->createUser($request->all()), new UserTransformer());
+        }
+
+        public function logout()
+        {
+            return $this->getJwtService()->deleteJwtToken(request()->header('Authorization'));
         }
     }

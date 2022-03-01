@@ -41,11 +41,25 @@ class AuthController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse|object
      */
     public function logout()
     {
-        return response("Logout");
+        $response = [
+            'status' => false,
+            'data' => 'Logout Failed'
+        ];
+
+        if ($this->getAuthService()->logout()) {
+            $response = [
+                'status' => true,
+                'data' => 'Logout Success'
+            ];
+
+            return response()->json($response)->setStatusCode(200);
+        }
+
+        return response()->json($response)->setStatusCode(401);
     }
 
     /**
