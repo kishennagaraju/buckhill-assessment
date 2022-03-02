@@ -3,8 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\CreateRequest;
-use App\Http\Requests\Admin\LoginRequest;
+use App\Http\Requests\Auth\LoginRequest;
 use App\Traits\Services\Auth;
 
 class AuthController extends Controller
@@ -14,7 +13,7 @@ class AuthController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param LoginRequest $request
+     * @param \App\Http\Requests\Auth\LoginRequest  $request
      *
      * @return \Illuminate\Http\JsonResponse
      * @throws \Throwable
@@ -60,16 +59,5 @@ class AuthController extends Controller
         }
 
         return response()->json($response)->setStatusCode(401);
-    }
-
-    /**
-     * Create a new Admin User.
-     *
-     * @param  \App\Http\Requests\Admin\CreateRequest  $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function store(CreateRequest $request): \Illuminate\Http\JsonResponse
-    {
-        return response()->json($this->getAuthService()->createUser($request));
     }
 }

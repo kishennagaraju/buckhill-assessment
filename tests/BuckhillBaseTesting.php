@@ -2,16 +2,19 @@
 
 namespace Tests;
 
+use App\Traits\Models\User;
 use App\Traits\Services\Jwt;
 use Illuminate\Contracts\Http\Kernel as HttpKernel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Hash;
 use PHPUnit\Framework\Assert as PHPUnit;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 
 class BuckhillBaseTesting extends TestCase
 {
     use Jwt;
+    use User;
 
     /**
      * @var mixed
@@ -140,6 +143,32 @@ class BuckhillBaseTesting extends TestCase
         }
     }
 
+    public function loginAdminUser()
+    {
+        $userDetails = $this->getUserModel()->newQuery()->where('is_admin', '=', 1)->first();
+        $this->getUserModel()->newQuery()->where('id', '=', $userDetails->id)->update([
+            'password' => Hash::make('admin')
+        ]);
+
+        $this->call('POST', 'api/v1/admin/login', [
+            'email' => $userDetails->email,
+            'password' => 'admin'
+        ]);
+    }
+
+    public function loginUser()
+    {
+        $userDetails = $this->getUserModel()->newQuery()->where('is_admin', '=', 0)->first();
+        $this->getUserModel()->newQuery()->where('id', '=', $userDetails->id)->update([
+            'password' => Hash::make('userpassword')
+        ]);
+
+        $this->call('POST', 'api/v1/user/login', [
+            'email' => $userDetails->email,
+            'password' => 'userpassword'
+        ]);
+    }
+
     /**
      * Generate JWT Token for User Details for API testing.
      *
@@ -153,10 +182,28 @@ class BuckhillBaseTesting extends TestCase
     }
 
     /**
+     * @param  array  $headers
      *
+     * @return void
      */
-    public function setHeaders($headers)
+    public function setHeaders(array $headers)
     {
         $this->withHeaders($headers);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAdminUser()
+    {
+        return $this->getUserModel()->newQuery()->where('is_admin', '=', 1)->firstOrFail();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUser()
+    {
+        return $this->getUserModel()->newQuery()->where('is_admin', '=', 0)->firstOrFail();
     }
 }

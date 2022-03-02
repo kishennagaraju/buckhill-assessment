@@ -3,7 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\UserDeleteRequest;
+use App\Http\Requests\Admin\CreateAdminRequest;
+use App\Http\Transformers\UserTransformer;
 use App\Traits\Models\User;
 
 class UserController extends Controller
@@ -42,5 +43,17 @@ class UserController extends Controller
         }
 
         return response()->json($response);
+    }
+
+    /**
+     * Create a new Admin User.
+     *
+     * @param  \App\Http\Requests\Admin\CreateAdminRequest  $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function store(CreateAdminRequest $request): \Illuminate\Http\JsonResponse
+    {
+        return response()->json(fractal($this->getUserModel()->createUser($request->all()), new UserTransformer()));
     }
 }

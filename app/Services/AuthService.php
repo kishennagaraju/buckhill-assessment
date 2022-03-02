@@ -1,12 +1,13 @@
 <?php
 
-    namespace App\Services\Admin;
+    namespace App\Services;
 
-    use App\Http\Transformers\UserTransformer;
     use App\Traits\Models\User;
     use App\Traits\Services\Hash;
     use App\Traits\Services\Jwt;
     use Illuminate\Foundation\Http\FormRequest;
+
+    use function request;
 
     class AuthService {
 
@@ -40,11 +41,11 @@
          *
          * @param  \Illuminate\Foundation\Http\FormRequest  $request
          *
-         * @return \Spatie\Fractal\Fractal
+         * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model
          */
         public function createUser(FormRequest $request)
         {
-            return fractal($this->getUserModel()->createUser($request->all()), new UserTransformer());
+            return $this->getUserModel()->createUser($request->all());
         }
 
         public function logout()

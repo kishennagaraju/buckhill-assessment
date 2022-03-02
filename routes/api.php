@@ -1,8 +1,9 @@
 <?php
 
-use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\User\AuthController as UserAuthController;
+use App\Http\Controllers\User\UserController as UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,13 +22,29 @@ Route::group(
         'prefix' => 'admin'
     ],
     function () {
-        Route::post('/create', [AuthController::class, 'store'])->name('admin.admin.create');
-        Route::post('/login', [AuthController::class, 'login'])->name('admin.admin.login');
+        Route::post('/create', [AdminUserController::class, 'store'])->name('admin.create');
+        Route::post('/login', [AdminAuthController::class, 'login'])->name('admin.login');
 
         Route::group(['middleware' => 'basic.auth.admin'], function() {
-            Route::get('/logout', [AuthController::class, 'logout'])->name('admin.admin.logout');
+            Route::get('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
             Route::get('/user-listing', [AdminUserController::class, 'index'])->name('admin.list.user');
             Route::delete('/user-delete/{uuid}', [AdminUserController::class, 'deleteUser'])->name('admin.delete.user');
+        });
+    }
+);
+
+Route::group(
+    [
+        'prefix' => 'user'
+    ],
+    function () {
+        Route::post('/create', [UserController::class, 'storeUser'])->name('user.create');
+        Route::post('/login', [UserAuthController::class, 'login'])->name('user.login');
+
+        Route::group(['middleware' => 'basic.auth'], function() {
+            Route::get('/', [UserController::class, 'show'])->name('user.details');
+            Route::delete('/', [UserController::class, 'delete'])->name('user.delete');
+            Route::get('/logout', [UserAuthController::class, 'logout'])->name('user.logout');
         });
     }
 );

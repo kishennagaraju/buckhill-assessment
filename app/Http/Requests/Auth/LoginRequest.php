@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Admin;
+namespace App\Http\Requests\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -31,7 +31,6 @@ class LoginRequest extends FormRequest
             'email.email' => 'Email should be in the correct email format.',
             'email.exists' => 'The specified admin does not exist.',
             'password.required' => 'Password cannot be empty.',
-            'password.min' => 'Password should be of minimum 8 characters.',
         ];
     }
 

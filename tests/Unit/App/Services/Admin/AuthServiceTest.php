@@ -7,7 +7,6 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use Spatie\Fractal\Fractal;
 use Tests\BuckhillBaseTesting;
 
 class AuthServiceTest extends BuckhillBaseTesting
@@ -65,6 +64,6 @@ class AuthServiceTest extends BuckhillBaseTesting
 
         $user = $this->getAuthService()->createUser($request);
 
-        $this->assertEquals(Fractal::class, get_class($user));
+        $this->assertNotEmpty($user->toArray());
     }
 }

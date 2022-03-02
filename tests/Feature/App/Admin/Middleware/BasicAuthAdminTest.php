@@ -8,9 +8,9 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use Tests\Feature\App\AdminBaseTesting;
+use Tests\BuckhillBaseTesting;
 
-class BasicAuthAdminTest extends AdminBaseTesting
+class BasicAuthAdminTest extends BuckhillBaseTesting
 {
     use RefreshDatabase;
     use Jwt;

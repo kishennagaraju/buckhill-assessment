@@ -2,12 +2,12 @@
 
 namespace App\Traits\Services;
 
-use App\Services\Admin\AuthService;
+use App\Services\AuthService;
 
 trait Auth
 {
     /**
-     * @var AuthService
+     * @var \App\Services\AuthService
      */
     protected $_authService;
 
@@ -24,7 +24,8 @@ trait Auth
     }
 
     /**
-     * @param AuthService $authService
+     * @param  \App\Services\AuthService  $authService
+     *
      * @return void
      */
     public function setAuthService(AuthService $authService): void
@@ -33,7 +34,7 @@ trait Auth
     }
 
     /**
-     * @return AuthService
+     * @return \App\Services\AuthService
      */
     protected function _createDefaultAuthService(): AuthService
     {

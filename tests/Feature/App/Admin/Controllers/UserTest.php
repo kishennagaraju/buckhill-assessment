@@ -3,9 +3,9 @@
 namespace Tests\Feature\App\Admin\Controllers;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\Feature\App\AdminBaseTesting;
+use Tests\BuckhillBaseTesting;
 
-class UserTest extends AdminBaseTesting
+class UserTest extends BuckhillBaseTesting
 {
     use RefreshDatabase;
 

@@ -2,20 +2,14 @@
 
 namespace Tests\Feature\App\Admin\Controllers;
 
-use App\Http\Controllers\Admin\AuthController;
-use App\Models\JwtTokens;
-use App\Services\Admin\AuthService;
-use App\Services\JwtService;
 use App\Traits\Models\User;
-use App\Traits\Services\Auth;
-use App\Traits\Services\Auth as AuthServiceTrait;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use Tests\Feature\App\AdminBaseTesting;
+use Tests\BuckhillBaseTesting;
 
-class AuthTest extends AdminBaseTesting
+class AuthTest extends BuckhillBaseTesting
 {
     use RefreshDatabase;
     use User;
@@ -73,7 +67,6 @@ class AuthTest extends AdminBaseTesting
         ]);
 
         $responseContent = $this->decodeResponseJson();
-        // $this->getJwtService()->deleteJwtToken($responseContent['data']['token']);
 
         $this->get('/api/v1/admin/logout', ['Authorization' => $responseContent['data']['token']]);
         $responseContent = $this->decodeResponseJson();
