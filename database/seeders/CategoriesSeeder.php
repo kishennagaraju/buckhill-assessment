@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Categories;
+use App\Models\Products;
 use Illuminate\Database\Seeder;
 
 class CategoriesSeeder extends Seeder
@@ -14,6 +15,9 @@ class CategoriesSeeder extends Seeder
      */
     public function run()
     {
-        Categories::factory()->count(10)->create();
+        \App\Models\Categories::factory()->count(5)->create()->each(function ($category) {
+            $products = \App\Models\Products::factory()->count(5)->make();
+            $category->products()->saveMany($products);
+        });
     }
 }

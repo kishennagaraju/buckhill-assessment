@@ -26,6 +26,11 @@ class Categories extends Model
         'slug',
     ];
 
+    public function products()
+    {
+        return $this->hasMany(Products::class, 'category_uuid', 'uuid');
+    }
+
     public function getAllCategories()
     {
         return app(Pipeline::class)
@@ -45,7 +50,7 @@ class Categories extends Model
 
     public function createCategory($data)
     {
-        return $this->newQuery()->firstOrCreate($data);
+        return $this->newQuery()->create($data);
     }
 
     public function updateCategoryByUuid($uuid, $data)

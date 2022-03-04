@@ -17,7 +17,7 @@ class BrandsController extends Controller
      */
     public function index()
     {
-        return response()->json($this->getBrandsModel()->getAllBrands());
+        return response()->json($this->getBrandsModel()->getAllBrands(['products']));
     }
 
     /**
@@ -28,21 +28,17 @@ class BrandsController extends Controller
      */
     public function store(CreateBrands $request)
     {
-        $response = [
-            'status' => false,
-            'message' => "Cannot create Brand"
-        ];
-
         if ($brandDetails = $this->getBrandsModel()->createBrand($request->all())) {
-            $response = [
+            return response()->json([
                 'status' => true,
                 'message' => $brandDetails
-            ];
-        } else {
-            return response()->json($response)->setStatusCode(500);
+            ]);
         }
 
-        return response()->json($response);
+        return response()->json([
+            'status' => false,
+            'message' => 'Could not create Brand'
+        ])->setStatusCode(500);
     }
 
     /**
@@ -53,7 +49,8 @@ class BrandsController extends Controller
      */
     public function show($uuid)
     {
-        $categoryDetails = $this->getBrandsModel()->getBrandByUuid($uuid);
+        $categoryDetails = $this->getBrandsModel()->getBrandByUuid($uuid, ['products']);
+
         return response()->json([
             'status' => true,
             'message' => $categoryDetails
@@ -70,12 +67,12 @@ class BrandsController extends Controller
      */
     public function update(UpdateBrands $request, string $uuid)
     {
-        if ($this->getBrandsModel()->updateBrandByUuid($uuid, $request->all())) {
-            return response()->json([
-                'status' => true,
-                'message' => $this->getBrandsModel()->getBrandByUuid($uuid)
-            ]);
-        }
+        $this->getBrandsModel()->updateBrandByUuid($uuid, $request->all());
+
+        return response()->json([
+            'status' => true,
+            'message' => $this->getBrandsModel()->getBrandByUuid($uuid)
+        ]);
     }
 
     /**
@@ -86,13 +83,10 @@ class BrandsController extends Controller
      */
     public function destroy(string $uuid)
     {
-        if ($this->getBrandsModel()->deleteBrandByUuid($uuid)) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Brand Deleted'
-            ]);
-        }
-
-        return false;
+        $this->getBrandsModel()->deleteBrandByUuid($uuid);
+        return response()->json([
+            'status' => false,
+            'message' => 'Brand Deleted'
+        ]);
     }
 }

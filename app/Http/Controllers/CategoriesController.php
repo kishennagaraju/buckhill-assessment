@@ -28,10 +28,18 @@ class CategoriesController extends Controller
      */
     public function store(CreateCategories $request)
     {
-        return response()->json([
-            'status' => true,
-            'message' => $this->getCategoriesModel()->createCategory($request->all())
-        ]);
+        if ($categoryDetails = $this->getCategoriesModel()->createCategory($request->all())) {
+            return response()->json([
+                'status' => true,
+                'message' => $categoryDetails
+            ]);
+        }
+
+        response()->json([
+            'status' => false,
+            'message' => 'Could not create Category'
+        ])->setStatusCode(500);
+
     }
 
     /**
