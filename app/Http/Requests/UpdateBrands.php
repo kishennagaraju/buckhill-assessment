@@ -6,6 +6,8 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateBrands extends FormRequest
 {
+    protected $stopOnFirstFailure = true;
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -24,7 +26,7 @@ class UpdateBrands extends FormRequest
     public function rules()
     {
         return [
-            'title' => 'required|exists:brands,title'
+            'title' => 'required|unique:brands,title'
         ];
     }
 }

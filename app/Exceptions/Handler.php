@@ -60,7 +60,7 @@ class Handler extends ExceptionHandler
         } elseif ($e instanceof ValidationException) {
             return response()->json([
                 'status' => false,
-                'message' => $e->getMessage()
+                'message' => $e->errors()[array_key_first($e->errors())][0]
             ])->setStatusCode(422);
         } elseif ($e instanceof \Exception) {
             return response()->json([
