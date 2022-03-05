@@ -71,7 +71,7 @@ Route::group(
 Route::apiResource('categories', CategoriesController::class)->parameters(['categories' => 'uuid']);
 Route::apiResource('brands', BrandsController::class)->parameters(['brands' => 'uuid']);
 Route::apiResource('products', ProductsController::class)->parameters(['products' => 'uuid']);
-Route::apiResource('file', FilesController::class)->only(['index', 'store'])->parameters([
+Route::apiResource('file', FilesController::class)->only(['show', 'store'])->parameters([
     'file' => 'uuid'
 ]);
 Route::apiResource('order-status', OrderStatusesController::class)->parameters(['order-status' => 'uuid']);
