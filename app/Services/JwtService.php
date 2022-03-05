@@ -28,6 +28,7 @@ class JwtService {
 
         $payload = [
             'user' => $data['uuid'],
+            'is_admin' => $data['is_admin'],
         ];
 
         if (empty($data['iat'])) {
@@ -73,18 +74,9 @@ class JwtService {
      */
     public function decodeJwtToken(string $jwtToken, bool $updateUser = true): object
     {
-        try {
-            JWT::$timestamp = time();
-            $decodedTokenDetails = JWT::decode($jwtToken, new Key($this->getPublicKey(), 'RS256'));
-            if ($updateUser) {
-                $this->getJwtTokensModel()->updateLastUsedDateForToken($jwtToken);
-            }
-            return $decodedTokenDetails;
-        } catch (ExpiredException $ex) {
-            // do nothing
-        }
+        JWT::$timestamp = time();
 
-        return false;
+        return JWT::decode($jwtToken, new Key($this->getPublicKey(), 'RS256'));
     }
 
     /**
@@ -97,16 +89,13 @@ class JwtService {
      */
     public function verifyJwtToken(string $jwtToken): bool
     {
-        $status = false;
-        try {
-            JWT::$timestamp = time();
-            JWT::decode($jwtToken, new Key($this->getPublicKey(), 'RS256'));
-            $status = true;
-        } catch (ExpiredException $ex) {
-            // do nothing
+        $tokenDetails = $this->getJwtTokensModel()->getJwtTokenDetails($jwtToken)->toArray();
+
+        if (!empty($tokenDetails)) {
+            return true;
         }
 
-        return $status;
+        return false;
     }
 
     /**

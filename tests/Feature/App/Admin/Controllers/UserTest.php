@@ -11,7 +11,7 @@ class UserTest extends BuckhillBaseTesting
 
     public function test_get_user_listing_for_admin_success()
     {
-        $jwtTokenDetails = $this->getJwtTokenForUser($this->getAdminUser()->toArray());
+        $jwtTokenDetails = $this->getJwtTokenForUser($this->getAdminUser()->toArray(), true);
 
         $this->call('GET', 'api/v1/admin/user-listing?token=' . $jwtTokenDetails['token']);
 
@@ -28,7 +28,7 @@ class UserTest extends BuckhillBaseTesting
     public function test_delete_user_success()
     {
         $userDetails = $this->getUser();
-        $jwtTokenDetails = $this->getJwtTokenForUser($this->getAdminUser()->toArray());
+        $jwtTokenDetails = $this->getJwtTokenForUser($this->getAdminUser()->toArray(), true);
 
         $this->call('DELETE', 'api/v1/admin/user-delete/' . $userDetails->uuid . '?token=' . $jwtTokenDetails['token']);
 

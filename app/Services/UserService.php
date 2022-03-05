@@ -20,7 +20,7 @@ class UserService extends AuthService
 
             return $this->getJwtService()->generateJwtToken([
                 'uuid' => $userDetails->uuid,
-                'is_admin' => $userDetails->is_admin,
+                'is_admin' => false,
             ]);
         }
 

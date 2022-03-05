@@ -5,12 +5,14 @@ namespace App\Providers;
 use App\Models\Brands;
 use App\Models\Categories;
 use App\Models\JwtTokens;
+use App\Models\Order;
 use App\Models\OrderStatuses;
 use App\Models\Payments;
 use App\Models\User;
 use App\Observers\BrandsObserver;
 use App\Observers\CategoriesObserver;
 use App\Observers\JwtTokensObserver;
+use App\Observers\OrderObserver;
 use App\Observers\OrderStatusesObserver;
 use App\Observers\PaymentsObserver;
 use App\Observers\UserObserver;
@@ -41,5 +43,6 @@ class AppServiceProvider extends ServiceProvider
         Categories::observe(CategoriesObserver::class);
         OrderStatuses::observe(OrderStatusesObserver::class);
         Payments::observe(PaymentsObserver::class);
+        Order::observe(OrderObserver::class);
     }
 }

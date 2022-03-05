@@ -32,7 +32,7 @@ class BasicAuth
             : $request->get('token');
 
         try {
-            $jwtTokenDetails = $this->getJwtService()->getJwtTokenDetails($jwtToken);
+            $jwtTokenDetails = $this->getJwtService()->decodeJwtToken($jwtToken);
             if (!$this->getJwtService()->verifyJwtToken($jwtToken)) {
                 return response()->json(['status' => false, 'message' => 'Invalid Token'])->setStatusCode(422);
             }

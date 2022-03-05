@@ -6,6 +6,7 @@ use App\Traits\Services\Jwt;
 use Closure;
 use Firebase\JWT\BeforeValidException;
 use Firebase\JWT\ExpiredException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
 class BasicAuthAdmin
@@ -35,15 +36,17 @@ class BasicAuthAdmin
                 return response()->json(['status' => false, 'message' => 'Invalid Token'])->setStatusCode(422);
             }
 
-            $tokenDetails = $this->getJwtService()->getJwtTokenDetails($jwtToken, ['user']);
+            $tokenDetails = $this->getJwtService()->decodeJwtToken($jwtToken);
             $this->getJwtService()->updateJwtTokenUsage($jwtToken);
 
-            if (!$tokenDetails->user->is_admin) {
+            if (!$tokenDetails->is_admin) {
                 return response()->json(['status' => false, 'message' => 'You should be logged in as admin'])->setStatusCode(422);
             }
         } catch (ExpiredException|BeforeValidException $ex) {
             return response()->json(['status' => false, 'message' => 'Invalid Token'])->setStatusCode(422);
         } catch (\Exception $e) {
+            return response()->json(['status' => false, 'message' => 'User Not Found'])->setStatusCode(404);
+        } catch (ModelNotFoundException $ex) {
             return response()->json(['status' => false, 'message' => 'User Not Found'])->setStatusCode(404);
         }
 

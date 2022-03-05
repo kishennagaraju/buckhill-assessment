@@ -23,7 +23,7 @@ class BasicAuthAdminTest extends BuckhillBaseTesting
     public function test_basic_auth_middleware_success()
     {
         $adminUserDetails = $this->getAdminUser();
-        $jwtTokenDetails = $this->getJwtTokenForUser($adminUserDetails->toArray());
+        $jwtTokenDetails = $this->getJwtTokenForUser($adminUserDetails->toArray(), true);
 
         $request = FormRequest::create('/api/v1/admin/user-listing', 'GET');
         $request->merge([
@@ -47,7 +47,6 @@ class BasicAuthAdminTest extends BuckhillBaseTesting
         $userDetails = $this->getUserModel()->createUser([
             'first_name' => 'Test',
             'last_name' => 'User',
-            'is_admin' => 0,
             'uuid' => Str::uuid(),
             'email' => 'usertest@buckhill.co.uk',
             'password' => Hash::make('testuser'),
@@ -135,7 +134,6 @@ class BasicAuthAdminTest extends BuckhillBaseTesting
         $userDetails = $this->getUserModel()->createUser([
             'first_name' => 'Test',
             'last_name' => 'User',
-            'is_admin' => 0,
             'uuid' => Str::uuid(),
             'email' => 'usertest@buckhill.co.uk',
             'password' => Hash::make('testuser'),
@@ -143,7 +141,7 @@ class BasicAuthAdminTest extends BuckhillBaseTesting
             'address' => '5303 Lubowitz Creek Suite 678 Reingerhaven, ND 62609',
             'phone_number' => '+1.253.273.7280'
         ]);
-        $jwtTokenDetails = $this->getJwtService()->generateJwtToken($userDetails->toArray());
+        $jwtTokenDetails = $this->getJwtTokenForUser($userDetails->toArray());
 
         $this->get('/api/v1/admin/user-listing', ['Authorization' => $jwtTokenDetails['token']]);
         $responseContent = $this->decodeResponseJson();

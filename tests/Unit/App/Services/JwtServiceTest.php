@@ -4,9 +4,10 @@ namespace Tests\App\Services;
 
 use App\Traits\Services\Jwt;
 use Illuminate\Support\Str;
+use Tests\BuckhillBaseTesting;
 use Tests\TestCase;
 
-class JwtServiceTest extends TestCase
+class JwtServiceTest extends BuckhillBaseTesting
 {
     use Jwt;
 
@@ -15,10 +16,11 @@ class JwtServiceTest extends TestCase
         $uuid = json_decode(json_encode(Str::uuid()), true);
         $data = [
             'uuid' => $uuid,
+            'is_admin' => false
         ];
+
         $jwtToken = $this->getJwtService()->generateJwtToken($data, false);
 
-        $status = $this->getJwtService()->verifyJwtToken($jwtToken['token']);
         $decodedTokenDetails = json_decode(
             json_encode(
                 $this->getJwtService()->decodeJwtToken(
@@ -29,7 +31,6 @@ class JwtServiceTest extends TestCase
             true
         );
 
-        $this->assertTrue($status);
         $this->assertEquals($uuid, $decodedTokenDetails['uuid']);
     }
 
@@ -38,6 +39,7 @@ class JwtServiceTest extends TestCase
         $uuid = json_decode(json_encode(Str::uuid()), true);
         $data = [
             'uuid' => json_decode(json_encode(Str::uuid()), true),
+            'is_admin' => false
         ];
 
         $dataUpt = $data;
@@ -45,7 +47,6 @@ class JwtServiceTest extends TestCase
 
         $jwtToken = $this->getJwtService()->generateJwtToken($dataUpt, false);
 
-        $status = $this->getJwtService()->verifyJwtToken($jwtToken['token']);
         $decodedTokenDetails = json_decode(
             json_encode(
                 $this->getJwtService()->decodeJwtToken(
@@ -56,7 +57,6 @@ class JwtServiceTest extends TestCase
             true
         );
 
-        $this->assertTrue($status);
         $this->assertNotEquals($uuid, $decodedTokenDetails['uuid']);
     }
 }

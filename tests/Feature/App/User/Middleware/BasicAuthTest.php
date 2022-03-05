@@ -47,7 +47,6 @@ class BasicAuthTest extends BuckhillBaseTesting
         $userDetails = $this->getUserModel()->createUser([
             'first_name' => 'Test',
             'last_name' => 'User',
-            'is_admin' => 1,
             'uuid' => Str::uuid(),
             'email' => 'usertest@buckhill.co.uk',
             'password' => Hash::make('testuser'),

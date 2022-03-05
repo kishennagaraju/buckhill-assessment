@@ -176,9 +176,9 @@ class BuckhillBaseTesting extends TestCase
      *
      * @return array
      */
-    public function getJwtTokenForUser(array $userDetails)
+    public function getJwtTokenForUser(array $userDetails, $isAdmin = false)
     {
-        return $this->getJwtService()->generateJwtToken($userDetails);
+        return $this->getJwtService()->generateJwtToken(array_merge($userDetails, ['is_admin' => $isAdmin]));
     }
 
     /**
