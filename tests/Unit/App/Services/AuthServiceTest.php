@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\App\Services\Admin;
+namespace Tests\Unit\App\Services;
 
 use App\Traits\Services\Auth;
 use Illuminate\Foundation\Http\FormRequest;
@@ -15,10 +15,6 @@ class AuthServiceTest extends BuckhillBaseTesting
 
     public function test_auth_login_success()
     {
-        DB::table('users')->where('is_admin', '=', 1)->update([
-            'password' => Hash::make('admin')
-        ]);
-
         $request = new FormRequest();
         $request->replace([
             'email' => 'admin@buckhill.co.uk',
@@ -33,10 +29,6 @@ class AuthServiceTest extends BuckhillBaseTesting
 
     public function test_auth_login_failure()
     {
-        DB::table('users')->where('is_admin', '=', 1)->update([
-            'password' => Hash::make('admin')
-        ]);
-
         $request = new FormRequest();
         $request->replace([
             'email' => 'admin@buckhill.co.uk',

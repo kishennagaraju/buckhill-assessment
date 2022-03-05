@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\User;
+namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateUserRequest extends FormRequest
+class CreateAdminRequest extends FormRequest
 {
     protected $stopOnFirstFailure = true;
 
@@ -21,6 +21,7 @@ class CreateUserRequest extends FormRequest
             'email' => 'required|email|unique:users,email',
             'password' => 'min:8|required_with:password_confirmation|same:password_confirmation',
             'password_confirmation' => 'min:8',
+            'avatar' => 'required',
             'address' => 'required',
             'phone_number' => 'required|regex:/^([0-9\s\-\+\.\(\)]*)$/|min:10',
         ];
@@ -40,6 +41,7 @@ class CreateUserRequest extends FormRequest
             'password.required' => 'Password cannot be empty.',
             'password.min' => 'Password should be of minimum 8 characters.',
             'password.required_with' => 'Password and Password Confirmation values should be same.',
+            'avatar.required' => 'Users\'s Avatar cannot be empty.',
             'address.required' => 'Address cannot be empty.',
             'phone_number.required' => 'Phone Number cannot be empty.',
             'phone_number.regex' => 'Phone Number should be in the correct format.',
@@ -55,5 +57,21 @@ class CreateUserRequest extends FormRequest
     public function authorize()
     {
         return true;
+    }
+
+    /**
+     * Modify the
+     *
+     * @param $keys
+     * @return array
+     */
+    public function all($keys = null)
+    {
+        $input = parent::all($keys);
+
+        $input['is_admin'] = true;
+        $input['is_marketing'] = $input['is_marketing'] ?? false;
+
+        return $input;
     }
 }

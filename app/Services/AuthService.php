@@ -23,13 +23,13 @@
          */
         public function login(FormRequest $request)
         {
-            $userDetails = $this->getUserModel()->getAdminUserDetailsByEmail($request->get('email'));
-            if ($this->getHashService()->verifyHashForString($request->get('password'), $userDetails->password)) {
-                $this->getUserModel()->updateLastLoginOfUser($userDetails->id);
+            $userDetails = $this->getUserModel()->getLoginUserDetailsByEmail($request->get('email'));
+            if ($this->getHashService()->verifyHashForString($request->get('password'), $userDetails['userDetails']->password)) {
+                $this->getUserModel()->updateLastLoginOfUserByUuid($userDetails['userDetails']->uuid);
 
                 return $this->getJwtService()->generateJwtToken([
-                    'uuid' => $userDetails->uuid,
-                    'is_admin' => true
+                    'uuid' => $userDetails['userDetails']->uuid,
+                    'is_admin' => $userDetails['is_admin']
                 ]);
             }
 

@@ -100,6 +100,33 @@ class User extends Authenticatable
     }
 
     /**
+     * Get User details by email address.
+     *
+     * @param  string  $email
+     *
+     * @return array
+     */
+    public function getLoginUserDetailsByEmail(string $email)
+    {
+        $admin = false;
+
+        if ($this->newQuery()
+            ->where('email', '=', $email)
+            ->where('is_admin', '=', 1)->exists()) {
+            $admin = true;
+        }
+
+        $userDetails = $this->newQuery()
+            ->where('email', '=', $email)
+            ->firstOrFail();
+
+        return [
+            'userDetails' => $userDetails,
+            'is_admin' => $admin
+        ];
+    }
+
+    /**
      * Create a new User.
      *
      * @param  array  $data
@@ -138,6 +165,11 @@ class User extends Authenticatable
         return $this->updateUser($userId, ['last_login_at' => now()]);
     }
 
+    public function updateLastLoginOfUserByUuid(string $uuid)
+    {
+        return $this->newQuery()->where('uuid', '=', $uuid)->update(['last_login_at' => now()]);
+    }
+
     /**
      * @param  string  $userUuid
      *
@@ -147,7 +179,6 @@ class User extends Authenticatable
     {
         return $this->newQuery()
             ->where('uuid', '=', $userUuid)
-            ->where('is_admin', '=', 0)
             ->delete();
     }
 

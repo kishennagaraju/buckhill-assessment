@@ -42,6 +42,8 @@ class BasicAuth
             return response()->json(['status' => false, 'message' => 'User Not Found'])->setStatusCode(404);
         }
 
+        $request->merge(['user' => $jwtTokenDetails]);
+
         return $next($request);
     }
 }

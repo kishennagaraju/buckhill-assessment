@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\LoginRequest;
 use App\Traits\Services\Auth;
+
+use function response;
 
 class AuthController extends Controller
 {
@@ -13,7 +14,7 @@ class AuthController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param \App\Http\Requests\Auth\LoginRequest  $request
+     * @param \App\Http\Requests\LoginRequest  $request
      *
      * @return \Illuminate\Http\JsonResponse
      * @throws \Throwable

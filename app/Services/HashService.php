@@ -34,4 +34,16 @@ class HashService {
     {
         return HashFacade::check($string, $hash);
     }
+
+    /**
+     * Check whether the string is a hashed value or needs hashing.
+     *
+     * @param  string  $string
+     *
+     * @return bool
+     */
+    public function needsRehash(string $string): bool
+    {
+        return HashFacade::needsRehash($string);
+    }
 }

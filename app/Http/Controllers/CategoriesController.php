@@ -10,6 +10,11 @@ class CategoriesController extends Controller
 {
     use Categories;
 
+    public function __construct()
+    {
+        $this->middleware('basic.auth', ['only' => ['store', 'update', 'destroy']]);
+    }
+
     /**
      * Display a listing of the resource.
      *

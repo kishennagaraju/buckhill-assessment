@@ -39,7 +39,7 @@ class AuthTest extends BuckhillBaseTesting
 
         $this->call('POST', 'api/v1/user/login', [
             'email' => $userDetails->email,
-            'password' => 'userpassword'
+            'password' => 'password1234'
         ]);
 
         $this->assertResponseStatus(401);

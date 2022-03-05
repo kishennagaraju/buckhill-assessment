@@ -1,16 +1,19 @@
 <?php
 
-namespace App\Http\Controllers\User;
+namespace App\Http\Controllers;
 
-use App\Http\Requests\User\CreateUserRequest;
-use App\Http\Controllers\Admin\UserController as AdminUserController;
-use App\Http\Transformers\UserTransformer;
+use App\Http\Requests\CreateUserRequest;
 use App\Traits\Models\JwtTokens;
 
+use App\Traits\Models\User;
 
-class UserController extends AdminUserController
+use function request;
+use function response;
+
+class UserController extends Controller
 {
     use JwtTokens;
+    use User;
 
     /**
      * List all non admin users.
@@ -24,19 +27,19 @@ class UserController extends AdminUserController
             ['user']
         );
 
-        return response()->json(fractal($tokenDetails->user, new UserTransformer()));
+        return response()->json($tokenDetails->user);
     }
 
     /**
      * Create a new User.
      *
-     * @param  \App\Http\Requests\User\CreateUserRequest  $request
+     * @param  \App\Http\Requests\CreateUserRequest  $request
      *
      * @return \Illuminate\Http\JsonResponse
      */
     public function storeUser(CreateUserRequest $request): \Illuminate\Http\JsonResponse
     {
-        return response()->json(fractal($this->getUserModel()->createUser($request->all()), new UserTransformer()));
+        return response()->json($this->getUserModel()->createUser($request->all()));
     }
 
     /**

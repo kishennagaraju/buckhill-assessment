@@ -1,30 +1,29 @@
 <?php
 
-use App\Http\Controllers\Admin\AuthController as AdminAuthController;
-use App\Http\Controllers\Admin\UserController as AdminUserController;
-use App\Http\Controllers\User\AuthController as UserAuthController;
-use App\Http\Controllers\User\UserController as UserController;
-use App\Http\Controllers\PromotionsController;
-use App\Http\Controllers\BlogController;
-use App\Http\Controllers\BrandsController;
-use App\Http\Controllers\CategoriesController;
-use App\Http\Controllers\FilesController;
-use App\Http\Controllers\OrdersController;
-use App\Http\Controllers\OrderStatusesController;
-use App\Http\Controllers\PaymentsController;
-use App\Http\Controllers\ProductsController;
-use Illuminate\Support\Facades\Route;
+    use App\Http\Controllers\Admin\UserController as AdminUserController;
+    use App\Http\Controllers\AuthController;
+    use App\Http\Controllers\BlogController;
+    use App\Http\Controllers\BrandsController;
+    use App\Http\Controllers\CategoriesController;
+    use App\Http\Controllers\FilesController;
+    use App\Http\Controllers\OrdersController;
+    use App\Http\Controllers\OrderStatusesController;
+    use App\Http\Controllers\PaymentsController;
+    use App\Http\Controllers\ProductsController;
+    use App\Http\Controllers\PromotionsController;
+    use App\Http\Controllers\UserController;
+    use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-|
-*/
+    /*
+    |--------------------------------------------------------------------------
+    | API Routes
+    |--------------------------------------------------------------------------
+    |
+    | Here is where you can register API routes for your application. These
+    | routes are loaded by the RouteServiceProvider within a group which
+    | is assigned the "api" middleware group. Enjoy building your API!
+    |
+    */
 
 Route::group(
     [
@@ -32,12 +31,12 @@ Route::group(
     ],
     function () {
         Route::post('/create', [AdminUserController::class, 'store'])->name('admin.create');
-        Route::post('/login', [AdminAuthController::class, 'login'])->name('admin.login');
+        Route::post('/login', [AuthController::class, 'login'])->name('admin.login');
 
         Route::group(['middleware' => 'basic.auth.admin'], function() {
-            Route::get('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
+            Route::get('/logout', [AuthController::class, 'logout'])->name('admin.logout');
             Route::get('/user-listing', [AdminUserController::class, 'index'])->name('admin.list.user');
-            Route::delete('/user-delete/{uuid}', [AdminUserController::class, 'deleteUser'])->name('admin.delete.user');
+            Route::delete('/user-delete/{uuid}', [UserController::class, 'delete'])->name('admin.delete.user');
         });
     }
 );
@@ -48,12 +47,12 @@ Route::group(
     ],
     function () {
         Route::post('/create', [UserController::class, 'storeUser'])->name('user.create');
-        Route::post('/login', [UserAuthController::class, 'login'])->name('user.login');
+        Route::post('/login', [AuthController::class, 'login'])->name('user.login');
 
         Route::group(['middleware' => 'basic.auth'], function() {
             Route::get('/', [UserController::class, 'show'])->name('user.details');
             Route::delete('/', [UserController::class, 'delete'])->name('user.delete');
-            Route::get('/logout', [UserAuthController::class, 'logout'])->name('user.logout');
+            Route::get('/logout', [AuthController::class, 'logout'])->name('user.logout');
         });
     }
 );

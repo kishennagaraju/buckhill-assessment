@@ -18,8 +18,10 @@ class UserObserver
      */
     public function creating(User $user)
     {
+        $user->password = ($this->getHashService()->needsRehash($user->password))
+            ? $this->getHashService()->generateHash($user->password)
+            : $user->password;
         $user->uuid = Str::uuid();
-        $user->password = $this->getHashService()->generateHash($user->password);
         $user->updated_at = now();
 
         if (!count($user->getDirty())) {

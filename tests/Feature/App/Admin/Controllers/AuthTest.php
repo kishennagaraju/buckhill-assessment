@@ -98,8 +98,8 @@ class AuthTest extends BuckhillBaseTesting
 
         $response = $this->decodeResponseJson();
 
-        $this->assertDatabaseHas('users', ['email' => $response['data']['email']]);
-        $this->assertEquals($data['email'], $response['data']['email']);
+        $this->assertDatabaseHas('users', ['email' => $response['email']]);
+        $this->assertEquals($data['email'], $response['email']);
         $this->assertResponseStatus(200);
     }
 
