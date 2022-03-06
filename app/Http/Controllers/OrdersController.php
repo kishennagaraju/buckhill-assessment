@@ -2,12 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Middleware\BasicAuth;
 use App\Http\Requests\CreateOrder;
 use App\Traits\Models\Order;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class OrdersController extends Controller
 {
     use Order;
+
+    public function __construct()
+    {
+        $this->middleware(BasicAuth::class);
+    }
 
     /**
      * Display a listing of the resource.
@@ -88,5 +95,26 @@ class OrdersController extends Controller
             'status' => false,
             'message' => 'Order Deleted'
         ]);
+    }
+
+    public function download($uuid)
+    {
+        $orderDetails = $this->getOrderModel()->getOrderByUuid($uuid, ['order_products', 'order_status']);
+
+        view()->share('order', $orderDetails);
+        $pdf_doc = Pdf::loadView('invoices.invoice', ['order' => $orderDetails]);
+        $fileName = storage_path('invoices/') . $orderDetails->uuid . '.pdf';
+        $pdf = $pdf_doc->download($fileName);
+
+        $headers = [
+            'Content-Disposition' => 'attachment; filename='. $orderDetails->uuid . '.pdf' . ';'
+        ];
+
+        return response()->download(
+            storage_path('app/public/') . $fileDetails->path,
+            $fileDetails->file_name,
+            $headers,
+            'attachment'
+        );
     }
 }

@@ -75,4 +75,5 @@ Route::apiResource('file', FilesController::class)->only(['show', 'store'])->par
 ]);
 Route::apiResource('order-status', OrderStatusesController::class)->parameters(['order-status' => 'uuid']);
 Route::apiResource('order', OrdersController::class)->parameters(['order' => 'uuid']);
+Route::get('/order/{uuid}/download', [OrdersController::class, 'download']);
 Route::apiResource('payments', PaymentsController::class)->parameters(['payments' => 'uuid']);

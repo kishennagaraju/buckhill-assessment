@@ -20,7 +20,8 @@ class DatabaseSeeder extends Seeder
             PostSeeder::class,
             CategoriesSeeder::class,
             OrderStatusesSeeder::class,
-            PaymentsSeeder::class
+            PaymentsSeeder::class,
+            OrdersSeeder::class
         ]);
     }
 }
