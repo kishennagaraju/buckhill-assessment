@@ -2,19 +2,64 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Middleware\BasicAuth;
 use App\Http\Requests\CreateProducts;
 use App\Http\Requests\UpdateProducts;
 use App\Traits\Models\Products;
-use Illuminate\Http\Request;
 
 class ProductsController extends Controller
 {
     use Products;
 
+    public function __construct()
+    {
+        $this->middleware(BasicAuth::class, ['only' => ['store', 'update', 'destroy']]);
+    }
+
     /**
-     * Display a listing of the resource.
+     * @OA\Get(
+     *     path="/api/v1/products",
+     *     summary="Retrieve All Products",
+     *     operationId="retrieveAllProducts",
+     *     tags={"Products"},
+     *     @OA\Parameter(
+     *         description="Page Number",
+     *         in="query",
+     *         name="page",
+     *         required=false,
+     *         @OA\Schema(type="integer"),
+     *     ),
+     *     @OA\Parameter(
+     *         description="Pagination Limit Per Page",
+     *         in="query",
+     *         name="limit",
+     *         required=false,
+     *         @OA\Schema(type="integer"),
+     *     ),
+     *     @OA\Parameter(
+     *         description="Pagination Sort",
+     *         in="query",
+     *         name="sortBy",
+     *         required=false,
+     *         @OA\Schema(type="string"),
+     *     ),
+     *     @OA\Parameter(
+     *         description="Sort in Descending",
+     *         in="query",
+     *         name="desc",
+     *         required=false,
+     *         @OA\Schema(type="boolean"),
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="OK"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal Server Error"
+     *     )
+     * )
      *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function index()
     {
@@ -22,10 +67,78 @@ class ProductsController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * @OA\Get(
+     *     path="/api/v1/products/{uuid}",
+     *     summary="Retrieve Single Product by UUID",
+     *     operationId="retrieveSingleProduct",
+     *     tags={"Products"},
+     *     @OA\Parameter(
+     *         description="Unique Identifier of Product",
+     *         in="path",
+     *         name="uuid",
+     *         required=true,
+     *         @OA\Schema(type="string"),
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="OK"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Not Found"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal Server Error"
+     *     )
+     * )
      *
-     * @param  CreateProducts  $request
-     * @return \Illuminate\Http\JsonResponse
+     */
+    public function show(string $uuid)
+    {
+        return response()->json([
+            'status' => true,
+            'message' => $this->getProductsModel()->getProductByUuid($uuid, ['category', 'brand'])
+        ]);
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/v1/products",
+     *     summary="Create Product",
+     *     operationId="createProduct",
+     *     security={{"bearerAuth": {}}},
+     *     tags={"Products"},
+     *     @OA\RequestBody(
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 required={"title"},
+     *                 @OA\Property(
+     *                     property="title",
+     *                     type="string"
+     *                 ),
+     *                 example={"title": "Test Product"}
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="OK"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Not Found"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal Server Error"
+     *     )
+     * )
      */
     public function store(CreateProducts $request)
     {
@@ -43,27 +156,50 @@ class ProductsController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * @OA\Put(
+     *     path="/api/v1/products/{uuid}",
+     *     summary="Update Product",
+     *     operationId="updateProduct",
+     *     security={{"bearerAuth": {}}},
+     *     tags={"Products"},
+     *     @OA\Parameter(
+     *         description="Unique Identifier of Product",
+     *         in="path",
+     *         name="uuid",
+     *         required=true,
+     *         @OA\Schema(type="string"),
+     *     ),
+     *     @OA\RequestBody(
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 required={"title"},
+     *                 @OA\Property(
+     *                     property="title",
+     *                     type="string"
+     *                 ),
+     *                 example={"title": "Test Product"}
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="OK"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Not Found"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal Server Error"
+     *     )
+     * )
      *
-     * @param  string  $uuid
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function show(string $uuid)
-    {
-        return response()->json([
-            'status' => true,
-            'message' => $this->getProductsModel()->getProductByUuid($uuid, ['category', 'brand'])
-        ]);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  UpdateProducts  $request
-     * @param  string          $uuid
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function update(UpdateProducts $request, string $uuid)
     {
@@ -76,10 +212,37 @@ class ProductsController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * @OA\Delete(
+     *     path="/api/v1/products/{uuid}",
+     *     summary="Delete Product",
+     *     operationId="deleteProduct",
+     *     security={{"bearerAuth": {}}},
+     *     tags={"Products"},
+     *     @OA\Parameter(
+     *         description="Unique Identifier of Product",
+     *         in="path",
+     *         name="uuid",
+     *         required=true,
+     *         @OA\Schema(type="string"),
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="OK"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Not Found"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal Server Error"
+     *     )
+     * )
      *
-     * @param  string  $uuid
-     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($uuid)
     {

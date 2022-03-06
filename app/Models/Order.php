@@ -59,10 +59,16 @@ class Order extends Model
         return $this->belongsToJson(Products::class, 'products[]->product', 'uuid');
     }
 
-    public function getAllOrders($relationships = [])
+    public function getAllOrders($relationships = [], $userId = null)
     {
+        $query = $this->newQuery()->with($relationships);
+
+        if (!empty($userId)) {
+            $query->where('user_id', '=', $userId);
+        }
+
         return app(Pipeline::class)
-            ->send($this->newQuery()->with($relationships))
+            ->send($query)
             ->through([
                 \App\QueryFilters\Page::class,
                 \App\QueryFilters\Sort::class,

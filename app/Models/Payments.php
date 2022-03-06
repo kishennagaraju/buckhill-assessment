@@ -26,6 +26,11 @@ class Payments extends Model
         'id'
     ];
 
+    /**
+     * @return mixed
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
     public function getAllPayments()
     {
         return app(Pipeline::class)
@@ -38,23 +43,45 @@ class Payments extends Model
             ->paginate(\request()->has('limit') ? \request()->get('limit') : env('PAGINATION_LIMIT', 10));
     }
 
-    public function getPaymentByUuid($uuid)
+    /**
+     * @param  string  $uuid
+     *
+     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model
+     */
+    public function getPaymentByUuid(string $uuid)
     {
         return $this->newQuery()->where('uuid', '=', $uuid)->firstOrFail();
     }
 
-    public function createPayment($data)
+    /**
+     * @param  array  $data
+     *
+     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model
+     */
+    public function createPayment(array $data)
     {
         return $this->newQuery()->create($data);
     }
 
-    public function updatePaymentByUuid($uuid, $data)
+    /**
+     * @param  string  $uuid
+     * @param  array   $data
+     *
+     * @return bool
+     * @throws \Throwable
+     */
+    public function updatePaymentByUuid(string $uuid, array $data)
     {
         $paymentDetails = $this->newQuery()->where('uuid', '=', $uuid)->firstOrFail();
         return $this->newQuery()->find($paymentDetails->id)->updateOrFail($data);
     }
 
-    public function deletePaymentByUuid($uuid)
+    /**
+     * @param  string  $uuid
+     *
+     * @return mixed
+     */
+    public function deletePaymentByUuid(string $uuid)
     {
         if ($this->newQuery()->where('uuid', '=', $uuid)->exists()) {
             return $this->newQuery()->where('uuid', '=', $uuid)->delete();

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Middleware\BasicAuth;
 use App\Http\Requests\CreatePayment;
 use App\Http\Requests\UpdatePayment;
 use App\Traits\Models\Payments;
@@ -10,10 +11,55 @@ class PaymentsController extends Controller
 {
     use Payments;
 
+    public function __construct()
+    {
+        $this->middleware(BasicAuth::class);
+    }
+
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\JsonResponse
+     * @OA\Get(
+     *     path="/api/v1/payments",
+     *     summary="Retrieve All Payments",
+     *     operationId="retrieveAllPayments",
+     *     security={{"bearerAuth": {}}},
+     *     tags={"Payments"},
+     *     @OA\Parameter(
+     *         description="Page Number",
+     *         in="query",
+     *         name="page",
+     *         required=false,
+     *         @OA\Schema(type="integer"),
+     *     ),
+     *     @OA\Parameter(
+     *         description="Pagination Limit Per Page",
+     *         in="query",
+     *         name="limit",
+     *         required=false,
+     *         @OA\Schema(type="integer"),
+     *     ),
+     *     @OA\Parameter(
+     *         description="Pagination Sort",
+     *         in="query",
+     *         name="sortBy",
+     *         required=false,
+     *         @OA\Schema(type="string"),
+     *     ),
+     *     @OA\Parameter(
+     *         description="Sort in Descending",
+     *         in="query",
+     *         name="desc",
+     *         required=false,
+     *         @OA\Schema(type="boolean"),
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="OK"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal Server Error"
+     *     )
+     * )
      */
     public function index()
     {
@@ -21,10 +67,81 @@ class PaymentsController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * @OA\Get(
+     *     path="/api/v1/payments/{uuid}",
+     *     summary="Retrieve Single Payment by UUID",
+     *     operationId="retrieveSinglePayment",
+     *     security={{"bearerAuth": {}}},
+     *     tags={"Payments"},
+     *     @OA\Parameter(
+     *         description="Unique Identifier of Payment",
+     *         in="path",
+     *         name="uuid",
+     *         required=true,
+     *         @OA\Schema(type="string"),
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="OK"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Not Found"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal Server Error"
+     *     )
+     * )
      *
-     * @param  CreatePayment  $request
-     * @return \Illuminate\Http\JsonResponse
+     */
+    public function show($uuid)
+    {
+        $categoryDetails = $this->getPaymentsModel()->getPaymentByUuid($uuid);
+
+        return response()->json([
+            'status' => true,
+            'message' => $categoryDetails
+        ]);
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/v1/payments",
+     *     summary="Create Payment",
+     *     operationId="createPayment",
+     *     security={{"bearerAuth": {}}},
+     *     tags={"Payments"},
+     *     @OA\RequestBody(
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 required={"title"},
+     *                 @OA\Property(
+     *                     property="title",
+     *                     type="string"
+     *                 ),
+     *                 example={"title": "Test Payment"}
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="OK"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Not Found"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal Server Error"
+     *     )
+     * )
      */
     public function store(CreatePayment $request)
     {
@@ -42,28 +159,50 @@ class PaymentsController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * @OA\Put(
+     *     path="/api/v1/payments/{uuid}",
+     *     summary="Update Payment",
+     *     operationId="updatePayment",
+     *     security={{"bearerAuth": {}}},
+     *     tags={"Payments"},
+     *     @OA\Parameter(
+     *         description="Unique Identifier of Payment",
+     *         in="path",
+     *         name="uuid",
+     *         required=true,
+     *         @OA\Schema(type="string"),
+     *     ),
+     *     @OA\RequestBody(
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 required={"title"},
+     *                 @OA\Property(
+     *                     property="title",
+     *                     type="string"
+     *                 ),
+     *                 example={"title": "Test Payment"}
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="OK"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Not Found"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal Server Error"
+     *     )
+     * )
      *
-     * @param  string  $uuid
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function show($uuid)
-    {
-        $categoryDetails = $this->getPaymentsModel()->getPaymentByUuid($uuid);
-
-        return response()->json([
-            'status' => true,
-            'message' => $categoryDetails
-        ]);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  UpdatePayment  $request
-     * @param  string         $uuid
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function update(UpdatePayment $request, string $uuid)
     {
@@ -76,10 +215,37 @@ class PaymentsController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * @OA\Delete(
+     *     path="/api/v1/payments/{uuid}",
+     *     summary="Delete Payment",
+     *     operationId="deletePayment",
+     *     security={{"bearerAuth": {}}},
+     *     tags={"Payments"},
+     *     @OA\Parameter(
+     *         description="Unique Identifier of Payment",
+     *         in="path",
+     *         name="uuid",
+     *         required=true,
+     *         @OA\Schema(type="string"),
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="OK"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Not Found"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal Server Error"
+     *     )
+     * )
      *
-     * @param  string  $uuid
-     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(string $uuid)
     {

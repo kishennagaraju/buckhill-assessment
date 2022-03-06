@@ -46,7 +46,9 @@ class OrderObserver
     public function saveOrUpdate(Order $order): void
     {
         $requestDetails = request()->all();
-        $userDetails = $this->getUserModel()->newQuery()->where('is_admin', '=', 0)->firstOrFail();
+        $userDetails = $this->getUserModel()->newQuery()
+            ->where('uuid', '=', request()->get('user')->uuid)
+            ->firstOrFail();
         $orderStatus = $this->getOrderStatusesModel()->getOrderStatusByUuid($requestDetails['order_status_uuid']);
         $paymentDetails = $this->getPaymentsModel()->getPaymentByUuid($requestDetails['payment_uuid']);
 

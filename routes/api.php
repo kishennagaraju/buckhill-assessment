@@ -1,6 +1,7 @@
 <?php
 
     use App\Http\Controllers\Admin\UserController as AdminUserController;
+    use App\Http\Controllers\AdminAuthController;
     use App\Http\Controllers\AuthController;
     use App\Http\Controllers\BlogController;
     use App\Http\Controllers\BrandsController;
@@ -31,12 +32,13 @@ Route::group(
     ],
     function () {
         Route::post('/create', [AdminUserController::class, 'store'])->name('admin.create');
-        Route::post('/login', [AuthController::class, 'login'])->name('admin.login');
+        Route::post('/login', [AdminAuthController::class, 'login'])->name('admin.login');
 
         Route::group(['middleware' => 'basic.auth.admin'], function() {
-            Route::get('/logout', [AuthController::class, 'logout'])->name('admin.logout');
+            Route::get('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
             Route::get('/user-listing', [AdminUserController::class, 'index'])->name('admin.list.user');
-            Route::delete('/user-delete/{uuid}', [UserController::class, 'delete'])->name('admin.delete.user');
+            Route::put('/user-edit', [AdminUserController::class, 'update'])->name('admin.edit.user');
+            Route::delete('/user-delete/{uuid}', [AdminUserController::class, 'delete'])->name('admin.delete.user');
         });
     }
 );
@@ -51,8 +53,9 @@ Route::group(
 
         Route::group(['middleware' => 'basic.auth'], function() {
             Route::get('/', [UserController::class, 'show'])->name('user.details');
-            Route::delete('/', [UserController::class, 'delete'])->name('user.delete');
+            Route::get('/orders', [UserController::class, 'getOrdersForUser'])->name('user.orders');
             Route::get('/logout', [AuthController::class, 'logout'])->name('user.logout');
+            Route::delete('/', [UserController::class, 'delete'])->name('user.delete');
         });
     }
 );

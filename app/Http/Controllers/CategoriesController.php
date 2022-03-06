@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Middleware\BasicAuth;
 use App\Http\Requests\CreateCategories;
 use App\Http\Requests\UpdateCategories;
 use App\Traits\Models\Categories;
@@ -12,13 +13,53 @@ class CategoriesController extends Controller
 
     public function __construct()
     {
-        $this->middleware('basic.auth', ['only' => ['store', 'update', 'destroy']]);
+        $this->middleware(BasicAuth::class, ['only' => ['store', 'update', 'destroy']]);
     }
 
     /**
-     * Display a listing of the resource.
+     * @OA\Get(
+     *     path="/api/v1/categories",
+     *     summary="Retrieve All Categories",
+     *     operationId="retrieveAllCategories",
+     *     tags={"Categories"},
+     *     @OA\Parameter(
+     *         description="Page Number",
+     *         in="query",
+     *         name="page",
+     *         required=false,
+     *         @OA\Schema(type="integer"),
+     *     ),
+     *     @OA\Parameter(
+     *         description="Pagination Limit Per Page",
+     *         in="query",
+     *         name="limit",
+     *         required=false,
+     *         @OA\Schema(type="integer"),
+     *     ),
+     *     @OA\Parameter(
+     *         description="Pagination Sort",
+     *         in="query",
+     *         name="sortBy",
+     *         required=false,
+     *         @OA\Schema(type="string"),
+     *     ),
+     *     @OA\Parameter(
+     *         description="Sort in Descending",
+     *         in="query",
+     *         name="desc",
+     *         required=false,
+     *         @OA\Schema(type="boolean"),
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="OK"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal Server Error"
+     *     )
+     * )
      *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function index()
     {
@@ -26,10 +67,78 @@ class CategoriesController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * @OA\Get(
+     *     path="/api/v1/categories/{uuid}",
+     *     summary="Retrieve Single Category by UUID",
+     *     operationId="retrieveSingleCategory",
+     *     tags={"Categories"},
+     *     @OA\Parameter(
+     *         description="Unique Identifier of Category",
+     *         in="path",
+     *         name="uuid",
+     *         required=true,
+     *         @OA\Schema(type="string"),
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="OK"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Not Found"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal Server Error"
+     *     )
+     * )
      *
-     * @param  \App\Http\Requests\CreateCategories  $request
-     * @return \Illuminate\Http\JsonResponse
+     */
+    public function show($uuid)
+    {
+        return response()->json([
+            'status' => true,
+            'message' => $this->getCategoriesModel()->getCategoryByUuid($uuid)
+        ]);
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/v1/categories",
+     *     summary="Create Category",
+     *     operationId="createCategory",
+     *     security={{"bearerAuth": {}}},
+     *     tags={"Categories"},
+     *     @OA\RequestBody(
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 required={"title"},
+     *                 @OA\Property(
+     *                     property="title",
+     *                     type="string"
+     *                 ),
+     *                 example={"title": "Test Category"}
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="OK"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Not Found"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal Server Error"
+     *     )
+     * )
      */
     public function store(CreateCategories $request)
     {
@@ -48,26 +157,50 @@ class CategoriesController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * @OA\Put(
+     *     path="/api/v1/categories/{uuid}",
+     *     summary="Update Category",
+     *     operationId="updateCategory",
+     *     security={{"bearerAuth": {}}},
+     *     tags={"Categories"},
+     *     @OA\Parameter(
+     *         description="Unique Identifier of Category",
+     *         in="path",
+     *         name="uuid",
+     *         required=true,
+     *         @OA\Schema(type="string"),
+     *     ),
+     *     @OA\RequestBody(
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 required={"title"},
+     *                 @OA\Property(
+     *                     property="title",
+     *                     type="string"
+     *                 ),
+     *                 example={"title": "Test Category"}
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="OK"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Not Found"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal Server Error"
+     *     )
+     * )
      *
-     * @param  string  $uuid
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function show($uuid)
-    {
-        return response()->json([
-            'status' => true,
-            'message' => $this->getCategoriesModel()->getCategoryByUuid($uuid)
-        ]);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\UpdateCategories  $request
-     * @param  string                               $uuid
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function update(UpdateCategories $request, string $uuid)
     {
@@ -80,10 +213,37 @@ class CategoriesController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * @OA\Delete(
+     *     path="/api/v1/categories/{uuid}",
+     *     summary="Delete Category",
+     *     operationId="deleteCategory",
+     *     security={{"bearerAuth": {}}},
+     *     tags={"Categories"},
+     *     @OA\Parameter(
+     *         description="Unique Identifier of Category",
+     *         in="path",
+     *         name="uuid",
+     *         required=true,
+     *         @OA\Schema(type="string"),
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="OK"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Not Found"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal Server Error"
+     *     )
+     * )
      *
-     * @param  string  $uuid
-     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(string $uuid)
     {

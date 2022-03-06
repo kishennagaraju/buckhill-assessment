@@ -5,18 +5,17 @@ namespace App\Http\Controllers;
 use App\Http\Requests\LoginRequest;
 use App\Traits\Services\Auth;
 
-use function response;
 
-class AuthController extends Controller
+class AdminAuthController extends Controller
 {
     use Auth;
 
     /**
      * @OA\Post(
-     *     path="/api/v1/user/login",
-     *     summary="User Login",
-     *     operationId="loginUser",
-     *     tags={"User"},
+     *     path="/api/v1/admin/login",
+     *     summary="Admin Login",
+     *     operationId="loginAdmin",
+     *     tags={"Admin"},
      *     @OA\RequestBody(
      *         @OA\MediaType(
      *             mediaType="application/json",
@@ -56,7 +55,7 @@ class AuthController extends Controller
             'data' => 'Login Failed'
         ];
 
-        if ($tokenDetails = $this->getAuthService()->login($request, '0')) {
+        if ($tokenDetails = $this->getAuthService()->login($request)) {
             $response = [
                 'status' => true,
                 'data' => $tokenDetails
@@ -70,10 +69,10 @@ class AuthController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/api/v1/user/logout",
-     *     summary="Retrieve Single User by UUID",
-     *     operationId="retrieveSingleUser",
-     *     tags={"User"},
+     *     path="/api/v1/admin/logout",
+     *     summary="Retrieve Single Admin by UUID",
+     *     operationId="retrieveSingleAdmin",
+     *     tags={"Admin"},
      *     security={{"bearerAuth": {}}},
      *     @OA\Response(
      *         response=200,

@@ -6,6 +6,7 @@ use App\Http\Middleware\BasicAuth;
 use App\Http\Requests\CreateOrder;
 use App\Traits\Models\Order;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Response;
 
 class OrdersController extends Controller
 {
@@ -17,9 +18,49 @@ class OrdersController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\JsonResponse
+     * @OA\Get(
+     *     path="/api/v1/order",
+     *     summary="Retrieve All Orders",
+     *     operationId="retrieveAllOrders",
+     *     security={{"bearerAuth": {}}},
+     *     tags={"Orders"},
+     *     @OA\Parameter(
+     *         description="Page Number",
+     *         in="query",
+     *         name="page",
+     *         required=false,
+     *         @OA\Schema(type="integer"),
+     *     ),
+     *     @OA\Parameter(
+     *         description="Pagination Limit Per Page",
+     *         in="query",
+     *         name="limit",
+     *         required=false,
+     *         @OA\Schema(type="integer"),
+     *     ),
+     *     @OA\Parameter(
+     *         description="Pagination Sort",
+     *         in="query",
+     *         name="sortBy",
+     *         required=false,
+     *         @OA\Schema(type="string"),
+     *     ),
+     *     @OA\Parameter(
+     *         description="Sort in Descending",
+     *         in="query",
+     *         name="desc",
+     *         required=false,
+     *         @OA\Schema(type="boolean"),
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="OK"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal Server Error"
+     *     )
+     * )
      */
     public function index()
     {
@@ -28,10 +69,42 @@ class OrdersController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\CreateOrder  $request
-     * @return \Illuminate\Http\JsonResponse
+     * @OA\Post(
+     *     path="/api/v1/order",
+     *     summary="Create Order",
+     *     operationId="createOrder",
+     *     security={{"bearerAuth": {}}},
+     *     tags={"Orders"},
+     *     @OA\RequestBody(
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 required={"title"},
+     *                 @OA\Property(
+     *                     property="title",
+     *                     type="string"
+     *                 ),
+     *                 example={"title": "Test Order"}
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="OK"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Not Found"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal Server Error"
+     *     )
+     * )
      */
     public function store(CreateOrder $request)
     {
@@ -49,10 +122,33 @@ class OrdersController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * @OA\Get(
+     *     path="/api/v1/order/{uuid}",
+     *     summary="Retrieve Single Order by UUID",
+     *     operationId="retrieveSingleOrder",
+     *     security={{"bearerAuth": {}}},
+     *     tags={"Orders"},
+     *     @OA\Parameter(
+     *         description="Unique Identifier of Order",
+     *         in="path",
+     *         name="uuid",
+     *         required=true,
+     *         @OA\Schema(type="string"),
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="OK"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Not Found"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal Server Error"
+     *     )
+     * )
      *
-     * @param  string  $uuid
-     * @return \Illuminate\Http\JsonResponse
      */
     public function show($uuid)
     {
@@ -65,12 +161,50 @@ class OrdersController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * @OA\Put(
+     *     path="/api/v1/order/{uuid}",
+     *     summary="Update Order",
+     *     operationId="updateOrder",
+     *     security={{"bearerAuth": {}}},
+     *     tags={"Orders"},
+     *     @OA\Parameter(
+     *         description="Unique Identifier of Order",
+     *         in="path",
+     *         name="uuid",
+     *         required=true,
+     *         @OA\Schema(type="string"),
+     *     ),
+     *     @OA\RequestBody(
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 required={"title"},
+     *                 @OA\Property(
+     *                     property="title",
+     *                     type="string"
+     *                 ),
+     *                 example={"title": "Test Order"}
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="OK"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Not Found"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal Server Error"
+     *     )
+     * )
      *
-     * @param  \App\Http\Requests\UpdateOrders      $request
-     * @param  string                               $uuid
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function update(UpdateOrders $request, string $uuid)
     {
@@ -83,10 +217,37 @@ class OrdersController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * @OA\Delete(
+     *     path="/api/v1/order/{uuid}",
+     *     summary="Delete Order",
+     *     operationId="deleteOrder",
+     *     security={{"bearerAuth": {}}},
+     *     tags={"Orders"},
+     *     @OA\Parameter(
+     *         description="Unique Identifier of Order",
+     *         in="path",
+     *         name="uuid",
+     *         required=true,
+     *         @OA\Schema(type="string"),
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="OK"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Not Found"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal Server Error"
+     *     )
+     * )
      *
-     * @param  string  $uuid
-     * @return \Illuminate\Http\JsonResponse|bool
      */
     public function destroy(string $uuid)
     {
@@ -97,6 +258,35 @@ class OrdersController extends Controller
         ]);
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/v1/order/{uuid}/download",
+     *     summary="Download Order Pdf by UUID",
+     *     operationId="downloadOrderPdf",
+     *     security={{"bearerAuth": {}}},
+     *     tags={"Orders"},
+     *     @OA\Parameter(
+     *         description="Unique Identifier of Order",
+     *         in="path",
+     *         name="uuid",
+     *         required=true,
+     *         @OA\Schema(type="string"),
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="OK"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Not Found"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal Server Error"
+     *     )
+     * )
+     *
+     */
     public function download($uuid)
     {
         $orderDetails = $this->getOrderModel()->getOrderByUuid($uuid, ['order_products', 'order_status']);
@@ -107,14 +297,12 @@ class OrdersController extends Controller
         $pdf = $pdf_doc->download($fileName);
 
         $headers = [
-            'Content-Disposition' => 'attachment; filename='. $orderDetails->uuid . '.pdf' . ';'
+            'Content-Disposition' => 'inline; filename='. $orderDetails->uuid . '.pdf' . ';'
         ];
 
-        return response()->download(
-            storage_path('app/public/') . $fileDetails->path,
-            $fileDetails->file_name,
-            $headers,
-            'attachment'
-        );
+        return Response::make($pdf, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="' . $orderDetails->uuid . '.pdf' . '"'
+        ]);
     }
 }

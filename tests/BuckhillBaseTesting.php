@@ -26,8 +26,6 @@ class BuckhillBaseTesting extends TestCase
         parent::setUp();
 
         $this->withoutExceptionHandling();
-
-        config(['app.url' => env('TESTING_BASE_URL', 'http://localhost')]);
         Artisan::call('migrate --seed');
     }
 

@@ -27,9 +27,11 @@ class BasicAuthAdmin
             return response()->json(['status' => false, 'message' => 'Unauthorized'])->setStatusCode(401);
         }
 
-        $jwtToken = $request->hasHeader('Authorization')
-            ? $request->header('Authorization')
-            : $request->get('token');
+        $jwtToken = ($request->bearerToken())
+            ? $request->bearerToken()
+            : ($request->hasHeader('Authorization')
+                ? $request->header('Authorization')
+                : $request->get('token'));
 
         try {
             if (!$this->getJwtService()->verifyJwtToken($jwtToken)) {
@@ -49,6 +51,8 @@ class BasicAuthAdmin
         } catch (ModelNotFoundException $ex) {
             return response()->json(['status' => false, 'message' => 'User Not Found'])->setStatusCode(404);
         }
+
+        $request->merge(['user' => $tokenDetails, 'token' => $jwtToken]);
 
         return $next($request);
     }

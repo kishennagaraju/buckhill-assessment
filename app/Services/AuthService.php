@@ -21,9 +21,9 @@
          * @return array|bool
          * @throws \Throwable
          */
-        public function login(FormRequest $request)
+        public function login(FormRequest $request, $isAdmin = '1')
         {
-            $userDetails = $this->getUserModel()->getLoginUserDetailsByEmail($request->get('email'));
+            $userDetails = $this->getUserModel()->getLoginUserDetailsByEmail($request->get('email'), $isAdmin);
             if ($this->getHashService()->verifyHashForString($request->get('password'), $userDetails['userDetails']->password)) {
                 $this->getUserModel()->updateLastLoginOfUserByUuid($userDetails['userDetails']->uuid);
 
@@ -50,6 +50,6 @@
 
         public function logout()
         {
-            return $this->getJwtService()->deleteJwtToken(request()->header('Authorization'));
+            return $this->getJwtService()->deleteJwtToken(request()->token);
         }
     }

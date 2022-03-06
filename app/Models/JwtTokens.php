@@ -86,6 +86,6 @@ class JwtTokens extends Model
      */
     public function deleteToken(string $token)
     {
-        return $this->newQuery()->where('unique_id', '=', $token)->delete();
+        return $this->newQuery()->where('unique_id', '=', $token)->firstOrFail()->delete();
     }
 }

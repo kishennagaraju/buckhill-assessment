@@ -27,9 +27,11 @@ class BasicAuth
             return response()->json(['status' => false, 'message' => 'Unauthorized'])->setStatusCode(401);
         }
 
-        $jwtToken = $request->hasHeader('Authorization')
-            ? $request->header('Authorization')
-            : $request->get('token');
+        $jwtToken = ($request->bearerToken())
+            ? $request->bearerToken()
+            : ($request->hasHeader('Authorization')
+                ? $request->header('Authorization')
+                : $request->get('token'));
 
         try {
             $jwtTokenDetails = $this->getJwtService()->decodeJwtToken($jwtToken);
@@ -42,7 +44,7 @@ class BasicAuth
             return response()->json(['status' => false, 'message' => 'User Not Found'])->setStatusCode(404);
         }
 
-        $request->merge(['user' => $jwtTokenDetails]);
+        $request->merge(['user' => $jwtTokenDetails, 'token' => $jwtToken]);
 
         return $next($request);
     }

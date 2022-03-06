@@ -102,11 +102,25 @@ class User extends Authenticatable
     /**
      * Get User details by email address.
      *
+     * @param  string  $uuid
+     *
+     * @return \App\Models\User|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model
+     */
+    public function getUserDetailsByUuid(string $uuid)
+    {
+        return $this->newQuery()
+            ->where('uuid', '=', $uuid)
+            ->firstOrFail();
+    }
+
+    /**
+     * Get User details by email address.
+     *
      * @param  string  $email
      *
      * @return array
      */
-    public function getLoginUserDetailsByEmail(string $email)
+    public function getLoginUserDetailsByEmail(string $email, int $isAdmin)
     {
         $admin = false;
 
@@ -118,6 +132,7 @@ class User extends Authenticatable
 
         $userDetails = $this->newQuery()
             ->where('email', '=', $email)
+            ->where('is_admin', '=', $isAdmin)
             ->firstOrFail();
 
         return [
@@ -203,7 +218,7 @@ class User extends Authenticatable
 
     public function storeJwtTokenDetailsForUser($userId, $tokenDetails)
     {
-        $user = $this->newQuery()->with('jwt_tokens')->where('uuid', '=', $userId)->firstOrFail();
+        $user = $this->newQuery()->with('jwt_tokens')->where('uuid', '=', $userId)->first();
 
         if (!$user->jwt_tokens->toArray()) {
             $user->jwt_tokens()->save(new JwtTokens($tokenDetails));
