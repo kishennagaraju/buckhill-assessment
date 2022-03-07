@@ -11,7 +11,7 @@
         {
             $builder = $next($request);
             $sort = request()->has('sort') ? request()->get('sort') : env('DEFAULT_SORT', 'id');
-            $dir = request()->get('desc') ? 'desc' : env('DEFAULT_SORT_DIR', 'asc');
+            $dir = request()->get('desc') ? 'desc' : env('DEFAULT_SORT_DIRECTION', 'asc');
 
             return $builder->orderBy($sort, $dir);
         }
