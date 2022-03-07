@@ -11,11 +11,6 @@ class PaymentsController extends Controller
 {
     use Payments;
 
-    public function __construct()
-    {
-        $this->middleware(BasicAuth::class);
-    }
-
     /**
      * @OA\Get(
      *     path="/api/v1/payments",
@@ -56,6 +51,10 @@ class PaymentsController extends Controller
      *         description="OK"
      *     ),
      *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     ),
+     *     @OA\Response(
      *         response=500,
      *         description="Internal Server Error"
      *     )
@@ -83,6 +82,10 @@ class PaymentsController extends Controller
      *     @OA\Response(
      *         response=200,
      *         description="OK"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
      *     ),
      *     @OA\Response(
      *         response=404,
@@ -116,12 +119,24 @@ class PaymentsController extends Controller
      *         @OA\MediaType(
      *             mediaType="application/json",
      *             @OA\Schema(
-     *                 required={"title"},
+     *                 required={"type","details"},
      *                 @OA\Property(
-     *                     property="title",
+     *                     property="type",
      *                     type="string"
      *                 ),
-     *                 example={"title": "Test Payment"}
+     *                 @OA\Property(
+     *                     property="details",
+     *                     type="object"
+     *                 ),
+     *                 example={
+     *                     "type": "credit_card|cash_on_delivery|bank_transfer",
+     *                     "details": {
+     *                         {"cvv": 249, "number": "4556720478426", "expire_date": "12/23", "holder_name": "Dr. Sheridan Nienow"},
+     *                         {"address": "48705 Christa Forest Jasttown, WI 95221-8736", "last_name": "Schultz", "first_name": "Mack"},
+     *                         {"iban": "PL65327539024464368422961701", "name": "Ken Schimmel", "swift": "HYUPWASK"},
+     *                         {"Any one of the above formats as per type"}
+     *                     }
+     *                 }
      *             )
      *         )
      *     ),
@@ -145,10 +160,10 @@ class PaymentsController extends Controller
      */
     public function store(CreatePayment $request)
     {
-        if ($brandDetails = $this->getPaymentsModel()->createPayment($request->all())) {
+        if ($paymentDetails = $this->getPaymentsModel()->createPayment($request->all())) {
             return response()->json([
                 'status' => true,
-                'message' => $brandDetails
+                'message' => $paymentDetails
             ]);
         }
 
@@ -176,12 +191,24 @@ class PaymentsController extends Controller
      *         @OA\MediaType(
      *             mediaType="application/json",
      *             @OA\Schema(
-     *                 required={"title"},
+     *                 required={"type","details"},
      *                 @OA\Property(
-     *                     property="title",
+     *                     property="type",
      *                     type="string"
      *                 ),
-     *                 example={"title": "Test Payment"}
+     *                 @OA\Property(
+     *                     property="details",
+     *                     type="object"
+     *                 ),
+     *                 example={
+     *                     "type": "credit_card|cash_on_delivery|bank_transfer",
+     *                     "details": {
+     *                         {"cvv": 249, "number": "4556720478426", "expire_date": "12/23", "holder_name": "Dr. Sheridan Nienow"},
+     *                         {"address": "48705 Christa Forest Jasttown, WI 95221-8736", "last_name": "Schultz", "first_name": "Mack"},
+     *                         {"iban": "PL65327539024464368422961701", "name": "Ken Schimmel", "swift": "HYUPWASK"},
+     *                         {"Any one of the above formats as per type"}
+     *                     }
+     *                 }
      *             )
      *         )
      *     ),

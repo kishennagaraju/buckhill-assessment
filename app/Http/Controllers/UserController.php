@@ -90,7 +90,7 @@ class UserController extends Controller
      *                     type="string"
      *                 ),
      *                 @OA\Property(
-     *                     property="marketing",
+     *                     property="is_marketing",
      *                     type="boolean"
      *                 ),
      *                 example={
@@ -102,6 +102,7 @@ class UserController extends Controller
      *                      "avatar": "82110194-fdc6-4872-9adb-4776e28deac3",
      *                      "address": "11930 Damion Light Suite 642 Brigitteside, AZ 62654",
      *                      "phone_number": "+1-936-301-5409 | (938) 653-8850 | 820.279.3605",
+     *                      "is_marketing": 1,
      *                 }
      *             )
      *         )
@@ -131,7 +132,7 @@ class UserController extends Controller
 
     /**
      * @OA\Put(
-     *     path="/api/v1/user",
+     *     path="/api/v1/user/{uuid}",
      *     summary="Update User",
      *     operationId="updateUser",
      *     security={{"bearerAuth": {}}},
@@ -181,7 +182,7 @@ class UserController extends Controller
      *                     type="string"
      *                 ),
      *                 @OA\Property(
-     *                     property="marketing",
+     *                     property="is_marketing",
      *                     type="boolean"
      *                 ),
      *                 example={
@@ -193,6 +194,7 @@ class UserController extends Controller
      *                      "avatar": "82110194-fdc6-4872-9adb-4776e28deac3",
      *                      "address": "11930 Damion Light Suite 642 Brigitteside, AZ 62654",
      *                      "phone_number": "+1-936-301-5409 | (938) 653-8850 | 820.279.3605",
+     *                      "is_marketing": 1,
      *                 }
      *             )
      *         )
@@ -222,11 +224,18 @@ class UserController extends Controller
 
     /**
      * @OA\Delete(
-     *     path="/api/v1/user",
+     *     path="/api/v1/user/{uuid}",
      *     summary="Delete User",
      *     operationId="deleteNonAdmin",
      *     security={{"bearerAuth": {}}},
      *     tags={"User"},
+     *     @OA\Parameter(
+     *         description="Unique Identifier of User",
+     *         in="path",
+     *         name="uuid",
+     *         required=true,
+     *         @OA\Schema(type="string"),
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="OK"
@@ -270,6 +279,34 @@ class UserController extends Controller
      *     operationId="retrieveLoginUserOrders",
      *     security={{"bearerAuth": {}}},
      *     tags={"User"},
+     *     @OA\Parameter(
+     *         description="Page Number",
+     *         in="query",
+     *         name="page",
+     *         required=false,
+     *         @OA\Schema(type="integer"),
+     *     ),
+     *     @OA\Parameter(
+     *         description="Pagination Limit Per Page",
+     *         in="query",
+     *         name="limit",
+     *         required=false,
+     *         @OA\Schema(type="integer"),
+     *     ),
+     *     @OA\Parameter(
+     *         description="Pagination Sort",
+     *         in="query",
+     *         name="sortBy",
+     *         required=false,
+     *         @OA\Schema(type="string"),
+     *     ),
+     *     @OA\Parameter(
+     *         description="Sort in Descending",
+     *         in="query",
+     *         name="desc",
+     *         required=false,
+     *         @OA\Schema(type="boolean"),
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="OK"

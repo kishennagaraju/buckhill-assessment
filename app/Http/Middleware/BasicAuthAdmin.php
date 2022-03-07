@@ -23,15 +23,15 @@ class BasicAuthAdmin
      */
     public function handle(Request $request, Closure $next)
     {
-        if (!$request->hasHeader('Authorization') && !$request->has('token')) {
-            return response()->json(['status' => false, 'message' => 'Unauthorized'])->setStatusCode(401);
-        }
-
         $jwtToken = ($request->bearerToken())
             ? $request->bearerToken()
             : ($request->hasHeader('Authorization')
                 ? $request->header('Authorization')
                 : $request->get('token'));
+
+        if (!$jwtToken) {
+            return response()->json(['status' => false, 'message' => 'Unauthorized'])->setStatusCode(401);
+        }
 
         try {
             if (!$this->getJwtService()->verifyJwtToken($jwtToken)) {

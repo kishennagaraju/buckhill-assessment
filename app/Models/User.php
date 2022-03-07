@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Pipeline\Pipeline;
@@ -156,15 +157,16 @@ class User extends Authenticatable
     /**
      * Update the existing user.
      *
-     * @param  integer  $id
+     * @param  string  $uuid
      * @param  array    $data
      *
      * @return bool
      * @throws \Throwable
      */
-    public function updateUser(int $id, array $data): bool
+    public function updateUser(string $uuid, array $data): bool
     {
-        return $this->newQuery()->find($id)->updateOrFail($data);
+        $userDetails = $this->newQuery()->where('uuid', '=', $uuid)->firstOrFail();
+        return $this->newQuery()->find($userDetails->id)->updateOrFail($data);
     }
 
     /**
@@ -192,9 +194,11 @@ class User extends Authenticatable
      */
     public function deleteUserByUuid(string $userUuid)
     {
-        return $this->newQuery()
-            ->where('uuid', '=', $userUuid)
-            ->delete();
+        if ($this->newQuery()->where('uuid', '=', $userUuid)->exists()) {
+            return $this->newQuery()->where('uuid', '=', $userUuid)->delete();
+        }
+
+        throw new ModelNotFoundException();
     }
 
     public function listNonAdminUsers()

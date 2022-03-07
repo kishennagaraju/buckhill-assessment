@@ -37,7 +37,7 @@ Route::group(
         Route::group(['middleware' => 'basic.auth.admin'], function() {
             Route::get('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
             Route::get('/user-listing', [AdminUserController::class, 'index'])->name('admin.list.user');
-            Route::put('/user-edit', [AdminUserController::class, 'update'])->name('admin.edit.user');
+            Route::put('/user-edit/{uuid}', [AdminUserController::class, 'update'])->name('admin.edit.user');
             Route::delete('/user-delete/{uuid}', [AdminUserController::class, 'delete'])->name('admin.delete.user');
         });
     }
@@ -55,7 +55,8 @@ Route::group(
             Route::get('/', [UserController::class, 'show'])->name('user.details');
             Route::get('/orders', [UserController::class, 'getOrdersForUser'])->name('user.orders');
             Route::get('/logout', [AuthController::class, 'logout'])->name('user.logout');
-            Route::delete('/', [UserController::class, 'delete'])->name('user.delete');
+            Route::put('/{uuid}', [UserController::class, 'update'])->name('user.edit');
+            Route::delete('/{uuid}', [UserController::class, 'delete'])->name('user.delete');
         });
     }
 );
@@ -79,4 +80,4 @@ Route::apiResource('file', FilesController::class)->only(['show', 'store'])->par
 Route::apiResource('order-status', OrderStatusesController::class)->parameters(['order-status' => 'uuid']);
 Route::apiResource('order', OrdersController::class)->parameters(['order' => 'uuid']);
 Route::get('/order/{uuid}/download', [OrdersController::class, 'download']);
-Route::apiResource('payments', PaymentsController::class)->parameters(['payments' => 'uuid']);
+Route::apiResource('payments', PaymentsController::class)->parameters(['payments' => 'uuid'])->middleware('basic.auth');

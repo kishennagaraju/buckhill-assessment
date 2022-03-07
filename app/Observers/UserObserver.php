@@ -21,7 +21,7 @@ class UserObserver
         $user->password = ($this->getHashService()->needsRehash($user->password))
             ? $this->getHashService()->generateHash($user->password)
             : $user->password;
-        $user->uuid = Str::uuid();
+        $user->uuid = (!$user->uuid) ? Str::uuid() : $user->uuid;
         $user->updated_at = now();
 
         if (!count($user->getDirty())) {

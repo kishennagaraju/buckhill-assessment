@@ -113,12 +113,37 @@ class ProductsController extends Controller
      *         @OA\MediaType(
      *             mediaType="application/json",
      *             @OA\Schema(
-     *                 required={"title"},
+     *                 required={"category_uuid","title","price","description","metadata"},
+     *                 @OA\Property(
+     *                     property="category_uuid",
+     *                     type="string"
+     *                 ),
      *                 @OA\Property(
      *                     property="title",
      *                     type="string"
      *                 ),
-     *                 example={"title": "Test Product"}
+     *                 @OA\Property(
+     *                     property="price",
+     *                     type="float"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="description",
+     *                     type="string"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="metadata",
+     *                     type="object"
+     *                 ),
+     *                 example={
+     *                     "category_uuid": "804913e0-e6f5-4bd7-9a09-c4d05e0b5fa7",
+     *                     "title": "Test Product",
+     *                     "price": 500.25,
+     *                     "description": "This is a Test Product",
+     *                     "metadata": {
+     *                         "brand": "cc64584c-bb62-4471-9cb8-7c6b52f4637e",
+     *                         "image": "ce16ef19-fc69-3f98-b334-bc50417d5219"
+     *                     }
+     *                 }
      *             )
      *         )
      *     ),
@@ -173,12 +198,37 @@ class ProductsController extends Controller
      *         @OA\MediaType(
      *             mediaType="application/json",
      *             @OA\Schema(
-     *                 required={"title"},
+     *                 required={"category_uuid","title","price","description","metadata"},
+     *                 @OA\Property(
+     *                     property="category_uuid",
+     *                     type="string"
+     *                 ),
      *                 @OA\Property(
      *                     property="title",
      *                     type="string"
      *                 ),
-     *                 example={"title": "Test Product"}
+     *                 @OA\Property(
+     *                     property="price",
+     *                     type="float"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="description",
+     *                     type="string"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="metadata",
+     *                     type="object"
+     *                 ),
+     *                 example={
+     *                     "category_uuid": "804913e0-e6f5-4bd7-9a09-c4d05e0b5fa7",
+     *                     "title": "Test Product",
+     *                     "price": 500.75,
+     *                     "description": "This is a Test Product",
+     *                     "metadata": {
+     *                         "brand": "cc64584c-bb62-4471-9cb8-7c6b52f4637e",
+     *                         "image": "ce16ef19-fc69-3f98-b334-bc50417d5219"
+     *                     }
+     *                 }
      *             )
      *         )
      *     ),

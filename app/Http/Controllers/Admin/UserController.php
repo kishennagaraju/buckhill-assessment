@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateAdminRequest;
+use App\Http\Requests\UpdateUserRequest;
 use App\Traits\Models\JwtTokens;
 use App\Traits\Models\User;
 
@@ -106,7 +107,7 @@ class UserController extends Controller
      *                     type="string"
      *                 ),
      *                 @OA\Property(
-     *                     property="marketing",
+     *                     property="is_marketing",
      *                     type="boolean"
      *                 ),
      *                 example={
@@ -118,6 +119,7 @@ class UserController extends Controller
      *                      "avatar": "82110194-fdc6-4872-9adb-4776e28deac3",
      *                      "address": "11930 Damion Light Suite 642 Brigitteside, AZ 62654",
      *                      "phone_number": "+1-936-301-5409 | (938) 653-8850 | 820.279.3605",
+     *                      "is_marketing": 1,
      *                 }
      *             )
      *         )
@@ -140,7 +142,7 @@ class UserController extends Controller
      *     )
      * )
      */
-    public function store(CreateAdminRequest $request): \Illuminate\Http\JsonResponse
+    public function store(CreateAdminRequest $request)
     {
         return response()->json($this->getUserModel()->createUser($request->all()));
     }
@@ -197,7 +199,7 @@ class UserController extends Controller
      *                     type="string"
      *                 ),
      *                 @OA\Property(
-     *                     property="marketing",
+     *                     property="is_marketing",
      *                     type="boolean"
      *                 ),
      *                 example={
@@ -209,6 +211,7 @@ class UserController extends Controller
      *                      "avatar": "82110194-fdc6-4872-9adb-4776e28deac3",
      *                      "address": "11930 Damion Light Suite 642 Brigitteside, AZ 62654",
      *                      "phone_number": "+1-936-301-5409 | (938) 653-8850 | 820.279.3605",
+     *                      "is_marketing": 1,
      *                 }
      *             )
      *         )
@@ -231,7 +234,7 @@ class UserController extends Controller
      *     )
      * )
      */
-    public function update(CreateAdminRequest $request, string $uuid)
+    public function update(UpdateUserRequest $request, string $uuid)
     {
         return response()->json($this->getUserModel()->updateUser($uuid, $request->all()));
     }

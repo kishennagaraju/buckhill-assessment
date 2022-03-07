@@ -59,7 +59,7 @@ class OrderObserver
             $amount += $productDetails->price * $product['quantity'];
         }
 
-        $order->uuid = Str::uuid();
+        $order->uuid = (!$order->uuid) ? Str::uuid() : $order->uuid;
         $order->products = $requestDetails['products'];
         $order->address = $requestDetails['address'];
         $order->amount = $amount;

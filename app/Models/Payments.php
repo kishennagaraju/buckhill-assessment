@@ -18,7 +18,7 @@ class Payments extends Model
     ];
 
     protected $fillable = [
-        'title',
+        'type',
         'details'
     ];
 

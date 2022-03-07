@@ -45,6 +45,6 @@ class Post extends Model
 
     public function getPostByUuid($uuid)
     {
-        return $this->newQuery()->where('uuid', '=', $uuid)->first();
+        return $this->newQuery()->where('uuid', '=', $uuid)->firstOrFail();
     }
 }

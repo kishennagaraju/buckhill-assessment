@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Middleware\BasicAuth;
 use App\Http\Requests\CreateOrder;
+use App\Http\Requests\UpdateOrder;
 use App\Traits\Models\Order;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Response;
@@ -57,6 +58,10 @@ class OrdersController extends Controller
      *         description="OK"
      *     ),
      *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     ),
+     *     @OA\Response(
      *         response=500,
      *         description="Internal Server Error"
      *     )
@@ -79,12 +84,45 @@ class OrdersController extends Controller
      *         @OA\MediaType(
      *             mediaType="application/json",
      *             @OA\Schema(
-     *                 required={"title"},
+     *                 required={"order_status_uuid","payment_uuid","products","address"},
      *                 @OA\Property(
-     *                     property="title",
+     *                     property="order_status_uuid",
      *                     type="string"
      *                 ),
-     *                 example={"title": "Test Order"}
+     *                 @OA\Property(
+     *                     property="payment_uuid",
+     *                     type="string"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="products",
+     *                     type="array",
+     *                     @OA\Items(
+     *                         type="array",
+     *                         @OA\Items()
+     *                     ),
+     *                 ),
+     *                 @OA\Property(
+     *                     property="address",
+     *                     type="object"
+     *                 ),
+     *                 example={
+     *                     "order_status_uuid": "26979c4f-1797-42ee-a058-8ae20d2994dd",
+     *                     "payment_uuid": "bf721734-a858-42fd-8372-869b8ce09dd9",
+     *                     "products": {
+     *                         {
+     *                              "product": "63af346c-6bbe-4e6d-ba15-b46616adf15f",
+     *                              "quantity": 2
+     *                         },
+     *                         {
+     *                              "product": "63af346c-6bbe-4e6d-ba15-b46616adf15f",
+     *                              "quantity": 2
+     *                         }
+     *                     },
+     *                     "address": {
+     *                         "billing": "731 Daugherty Alley Apt. 968 Port Russel, WA 11432",
+     *                         "shipping": "731 Daugherty Alley Apt. 968 Port Russel, WA 11432"
+     *                     }
+     *                 }
      *             )
      *         )
      *     ),
@@ -140,6 +178,10 @@ class OrdersController extends Controller
      *         description="OK"
      *     ),
      *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     ),
+     *     @OA\Response(
      *         response=404,
      *         description="Not Found"
      *     ),
@@ -178,12 +220,45 @@ class OrdersController extends Controller
      *         @OA\MediaType(
      *             mediaType="application/json",
      *             @OA\Schema(
-     *                 required={"title"},
+     *                 required={"order_status_uuid","payment_uuid","products","address"},
      *                 @OA\Property(
-     *                     property="title",
+     *                     property="order_status_uuid",
      *                     type="string"
      *                 ),
-     *                 example={"title": "Test Order"}
+     *                 @OA\Property(
+     *                     property="payment_uuid",
+     *                     type="string"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="products",
+     *                     type="array",
+     *                     @OA\Items(
+     *                         type="array",
+     *                         @OA\Items()
+     *                     ),
+     *                 ),
+     *                 @OA\Property(
+     *                     property="address",
+     *                     type="object"
+     *                 ),
+     *                 example={
+     *                     "order_status_uuid": "26979c4f-1797-42ee-a058-8ae20d2994dd",
+     *                     "payment_uuid": "bf721734-a858-42fd-8372-869b8ce09dd9",
+     *                     "products": {
+     *                         {
+     *                              "product": "63af346c-6bbe-4e6d-ba15-b46616adf15f",
+     *                              "quantity": 2
+     *                         },
+     *                         {
+     *                              "product": "63af346c-6bbe-4e6d-ba15-b46616adf15f",
+     *                              "quantity": 2
+     *                         }
+     *                     },
+     *                     "address": {
+     *                         "billing": "731 Daugherty Alley Apt. 968 Port Russel, WA 11432",
+     *                         "shipping": "731 Daugherty Alley Apt. 968 Port Russel, WA 11432"
+     *                     }
+     *                 }
      *             )
      *         )
      *     ),
@@ -206,13 +281,13 @@ class OrdersController extends Controller
      * )
      *
      */
-    public function update(UpdateOrders $request, string $uuid)
+    public function update(UpdateOrder $request, string $uuid)
     {
         $this->getOrderModel()->updateOrderByUuid($uuid, $request->all());
 
         return response()->json([
             'status' => true,
-            'message' => $this->getOrderModel()->getOrderByUuid($uuid)
+            'message' => $this->getOrderModel()->getOrderByUuid($uuid, ['user', 'order_status', 'payment', 'order_products'])
         ]);
     }
 
@@ -275,6 +350,10 @@ class OrdersController extends Controller
      *     @OA\Response(
      *         response=200,
      *         description="OK"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
      *     ),
      *     @OA\Response(
      *         response=404,

@@ -4,6 +4,7 @@ namespace Tests;
 
 use App\Traits\Models\User;
 use App\Traits\Services\Jwt;
+use Faker\Factory;
 use Illuminate\Contracts\Http\Kernel as HttpKernel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
@@ -203,5 +204,87 @@ class BuckhillBaseTesting extends TestCase
     public function getUser()
     {
         return $this->getUserModel()->newQuery()->where('is_admin', '=', 0)->firstOrFail();
+    }
+
+    public function getAuthTokenForAdmin()
+    {
+        $this->loginAdminUser();
+        $response = $this->decodeResponseJson();
+
+        return $response['data']['token'];
+    }
+
+    public function getAuthTokenForUser()
+    {
+        $this->loginUser();
+        $response = $this->decodeResponseJson();
+
+        return $response['data']['token'];
+    }
+
+    public function getProducts($count = 1)
+    {
+        $this->get('/api/v1/products?limit=2');
+        $response = $this->decodeResponseJson();
+        return $response['data'];
+    }
+
+    public function getOrderStatus($count = 1)
+    {
+        $this->get('/api/v1/order-status?limit=1');
+        $response = $this->decodeResponseJson();
+        return $response['data'];
+    }
+
+    public function getPayments($count = 1)
+    {
+        $this->get('/api/v1/payments?limit=1', ['Authorization' => 'Bearer ' . $this->getAuthTokenForAdmin()]);
+        $response = $this->decodeResponseJson();
+        return $response['data'];
+    }
+
+    public function storeOrder($token = null)
+    {
+        $authToken = (!$token) ? $this->getAuthTokenForAdmin() : $token;
+        $order_status = $this->getOrderStatus()[0];
+        $payment = $this->getPayments()[0];
+        $products = $this->getProducts(2);
+
+        $productArr = [];
+        $price = 0;
+        foreach ($products as $product) {
+            $productArr[] = [
+                'product' => $product['uuid'],
+                'quantity' => 2
+            ];
+            $price += ($product['price'] * 2);
+        }
+
+        $data = [
+            'order_status_uuid' => $order_status['uuid'],
+            'payment_uuid' => $payment['uuid'],
+            'products' => $productArr,
+            'address' => $this->getAddress(),
+            'delivery_fee' => '20.00',
+            'amount' => $price
+        ];
+
+        $this->post('/api/v1/order', $data, ['Authorization' => 'Bearer ' . $authToken]);
+
+        return $this->decodeResponseJson()['message'];
+    }
+
+    public function getAddress($includeShipping = true)
+    {
+        $faker = Factory::create();
+        $address = [
+            'billing' => $faker->address()
+        ];
+
+        if ($includeShipping) {
+            $address['shipping'] = $faker->address();
+        }
+
+        return $address;
     }
 }
