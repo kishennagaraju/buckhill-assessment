@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateUserRequest;
+use App\Http\Requests\ResetPasswordRequest;
+use App\Models\PasswordResets;
 use App\Traits\Models\JwtTokens;
 use App\Traits\Models\User;
 use App\Traits\Services\User as UserService;
+use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
@@ -331,5 +334,125 @@ class UserController extends Controller
                 ['order_status', 'payment', 'order_products']
             )
         );
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/v1/user/forgot-password",
+     *     summary="Forgot Password",
+     *     operationId="forgotPassword",
+     *     tags={"User"},
+     *     @OA\RequestBody(
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 required={"email"},
+     *                 @OA\Property(
+     *                     property="email",
+     *                     type="string"
+     *                 ),
+     *                 example={
+     *                      "email": "test@buckhill.co.uk"
+     *                 }
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="OK"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Not Found"
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Unprocessable Data"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal Server Error"
+     *     )
+     * )
+     */
+    public function forgotPassword(Request $request)
+    {
+        $validated = $request->validate([
+            'email' => 'required|email'
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => $this->getUserService()->forgotPassword($validated['email'])
+        ]);
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/v1/user/reset-password",
+     *     summary="Reset Password",
+     *     operationId="resetPassword",
+     *     tags={"User"},
+     *     @OA\RequestBody(
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 required={"token","email","password","password_confirmation"},
+     *                 @OA\Property(
+     *                     property="token",
+     *                     type="string"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="email",
+     *                     type="string"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="password",
+     *                     type="string"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="password_confirmation",
+     *                     type="string"
+     *                 ),
+     *                 example={
+     *                      "token": "MV3XsE3dAYkQHFuc7mRyw2absoAdptl5uUTLLUkrZVmD3EjjDk",
+     *                      "email": "test@buckhill.co.uk",
+     *                      "password": "admin1234",
+     *                      "password_confirmation": "admin1234"
+     *                 }
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="OK"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Not Found"
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Unprocessable Data"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal Server Error"
+     *     )
+     * )
+     */
+    public function resetPassword(ResetPasswordRequest $request)
+    {
+        if ($this->getUserService()->resetPassword($request->all())) {
+            return response()->json([
+                'status' => true,
+                'message' => 'Password Reset Successfull'
+            ]);
+        }
+
+        return response()->json([
+            'status' => false,
+            'message' => 'could not reset password'
+        ])->setStatusCode(500);
     }
 }

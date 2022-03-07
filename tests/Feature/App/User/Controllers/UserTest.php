@@ -5,6 +5,7 @@ namespace Tests\Feature\App\User\Controllers;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Tests\BuckhillBaseTesting;
 
 class UserTest extends BuckhillBaseTesting
@@ -195,5 +196,89 @@ class UserTest extends BuckhillBaseTesting
 
         $this->get('api/v1/user/orders');
         $this->assertResponseStatus(401);
+    }
+
+    /**
+     * Admin Login Success Test.
+     *
+     * @return void
+     */
+    public function test_user_forgot_password_success()
+    {
+        $user = $this->getUser();
+        $this->post('api/v1/user/forgot-password', [
+            'email' => $user->email
+        ]);
+        $this->assertResponseStatus(200);
+    }
+
+    /**
+     * Admin Login Success Test.
+     *
+     * @return void
+     */
+    public function test_user_forgot_password_invalid_data()
+    {
+        $this->expectException(ValidationException::class);
+        $this->post('api/v1/user/forgot-password', [
+            'email' => '1234567'
+        ]);
+    }
+
+    /**
+     * Admin Login Success Test.
+     *
+     * @return void
+     */
+    public function test_user_forgot_password_not_found()
+    {
+        $this->expectException(ModelNotFoundException::class);
+        $this->post('api/v1/user/forgot-password', [
+            'email' => 'test1234@buckhill.com'
+        ]);
+    }
+
+    /**
+     * Admin Login Success Test.
+     *
+     * @return void
+     */
+    public function test_user_reset_password_success()
+    {
+        $user = $this->getUser();
+        $this->post('api/v1/user/forgot-password', [
+            'email' => $user->email
+        ]);
+        $response = $this->decodeResponseJson()['message'];
+
+        $this->post('api/v1/user/reset-password', [
+            'email' => $user->email,
+            'token' => $response['token'],
+            'password' => 'admin1234',
+            'password_confirmation' => 'admin1234'
+        ]);
+        $this->assertResponseStatus(200);
+    }
+
+    /**
+     * Admin Login Success Test.
+     *
+     * @return void
+     */
+    public function test_user_reset_password_invalid_data()
+    {
+        $this->expectException(ValidationException::class);
+        $user = $this->getUser();
+        $this->post('api/v1/user/forgot-password', [
+            'email' => $user->email
+        ]);
+        $response = $this->decodeResponseJson()['message'];
+
+        $this->post('api/v1/user/reset-password', [
+            'email' => '1344443w2',
+            'token' => $response['token'],
+            'password' => 'admin1234',
+            'password_confirmation' => 'admin1234'
+        ]);
     }
 }

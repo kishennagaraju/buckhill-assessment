@@ -28,4 +28,19 @@ class UserObserver
             $user->created_at = now();
         }
     }
+
+    /**
+     * Handle the Put "updated" event.
+     *
+     * @param  User  $user
+     * @return void
+     */
+    public function updating(User $user)
+    {
+        if (!empty($user->password)) {
+            $user->password = ($this->getHashService()->needsRehash($user->password))
+                ? $this->getHashService()->generateHash($user->password)
+                : $user->password;
+        }
+    }
 }

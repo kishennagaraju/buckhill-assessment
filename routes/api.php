@@ -50,6 +50,8 @@ Route::group(
     function () {
         Route::post('/create', [UserController::class, 'storeUser'])->name('user.create');
         Route::post('/login', [AuthController::class, 'login'])->name('user.login');
+        Route::post('/forgot-password', [UserController::class, 'forgotPassword'])->name('user.forgot.password');
+        Route::post('/reset-password', [UserController::class, 'resetPassword'])->name('user.reset.password');
 
         Route::group(['middleware' => 'basic.auth'], function() {
             Route::get('/', [UserController::class, 'show'])->name('user.details');

@@ -7,6 +7,7 @@ use App\Models\Categories;
 use App\Models\JwtTokens;
 use App\Models\Order;
 use App\Models\OrderStatuses;
+use App\Models\PasswordResets;
 use App\Models\Payments;
 use App\Models\Products;
 use App\Models\User;
@@ -15,6 +16,7 @@ use App\Observers\CategoriesObserver;
 use App\Observers\JwtTokensObserver;
 use App\Observers\OrderObserver;
 use App\Observers\OrderStatusesObserver;
+use App\Observers\PasswordResetsObserver;
 use App\Observers\PaymentsObserver;
 use App\Observers\ProductsObserver;
 use App\Observers\UserObserver;
@@ -47,5 +49,6 @@ class AppServiceProvider extends ServiceProvider
         Products::observe(ProductsObserver::class);
         Payments::observe(PaymentsObserver::class);
         Order::observe(OrderObserver::class);
+        PasswordResets::observe(PasswordResetsObserver::class);
     }
 }
