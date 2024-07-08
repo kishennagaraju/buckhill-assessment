@@ -4,7 +4,7 @@ This project is done only for the purpose of assessment and this is not to be us
 
 # Instructions
 
-Please see the below instructions for the Buckhill assessment task.
+Please see the below instructions.
 
 ## 1. Env Setup:
 
